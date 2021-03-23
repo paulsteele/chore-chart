@@ -3,7 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace dotvote.Server
+namespace chores.Server
 {
 	public static class Program
 	{

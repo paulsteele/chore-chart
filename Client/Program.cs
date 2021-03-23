@@ -4,7 +4,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace dotvote.Client
+namespace chores.Client
 {
 	public class Program
 	{

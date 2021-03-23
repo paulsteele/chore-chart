@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview2.20160.5" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\dotvote.Shared.csproj" />
+    <ProjectReference Include="..\Shared\chores.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ViewModels" />
