@@ -1,0 +1,6 @@
+.git
+.idea
+k8s.template.yaml
+README.md
+**/bin
+**/obj

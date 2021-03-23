@@ -1,0 +1,12 @@
+@inherits LayoutComponentBase
+
+@{
+	var options = new List<(string, string)> {("About", "/about")};
+}
+
+<div class="main">
+	<Navbar Items="@options"></Navbar>
+	<div class="container">
+		@Body
+	</div>
+</div>

@@ -1,0 +1,31 @@
+<div class="">
+	<nav class="navbar navbar-expand-lg navbar-dark">
+		<a class="navbar-brand" href="/">dot-voting</a>
+		<button class="navbar-toggler" type="button" @onclick="ToggleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="@NavbarClassName">
+			<ul class="navbar-nav mr-auto">
+				@foreach (var (name, route) in Items)
+				{
+					<li class="nav-item">
+						<a class="nav-link" href="@route">@name</a>
+					</li>
+				}
+			</ul>
+		</div>
+	</nav>
+</div>
+
+@code {
+	[Parameter] public IList<(string, string)> Items { get; set; }
+	[Parameter] public bool Open { get; set; }
+
+	private string NavbarClassName => Open ? "navbar-content" : "navbar-content closed";
+	
+	private void ToggleNavbar(MouseEventArgs e)
+	{
+		Open = !Open;
+	}
+}
