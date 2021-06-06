@@ -12,11 +12,10 @@ namespace chores.Server
 			// ASP.NET Core 3.0+:
 			// The UseServiceProviderFactory call attaches the
 			// Autofac provider to the generic hosting mechanism.
-			var host = Host.CreateDefaultBuilder(args)
+			IHost host = Host.CreateDefaultBuilder(args)
 				.UseServiceProviderFactory(new AutofacServiceProviderFactory())
 				.ConfigureWebHostDefaults(webHostBuilder => {
 					webHostBuilder
-						.UseContentRoot(Directory.GetCurrentDirectory())
 						.UseStartup<Startup>();
 				})
 				.Build();

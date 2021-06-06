@@ -1,13 +1,10 @@
-using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using dotvote.Server.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace chores.Server
 {
@@ -16,16 +13,6 @@ namespace chores.Server
 		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
-		}
-
-		public Startup(IHostEnvironment env)
-		{
-			var builder = new ConfigurationBuilder()
-				.SetBasePath(env.ContentRootPath)
-				.AddJsonFile("appsettings.json", true, true)
-				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
-				.AddEnvironmentVariables();
-			Configuration = builder.Build();
 		}
 
 		public IConfiguration Configuration { get; }
@@ -51,10 +38,10 @@ namespace chores.Server
 
 			app.UseRouting();
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-				endpoints.MapFallbackToFile("index.html");
+			app.UseEndpoints(endpoints => {
+					endpoints.MapRazorPages();
+					endpoints.MapControllers();
+					endpoints.MapFallbackToFile("index.html");
 			});
 		}
 
@@ -67,7 +54,8 @@ namespace chores.Server
 			// won't get called. Don't create a ContainerBuilder
 			// for Autofac here, and don't call builder.Populate() - that
 			// happens in the AutofacServiceProviderFactory for you.
-			services.AddControllers();
+			services.AddControllersWithViews();
+			services.AddRazorPages();
 		}
 
 		// ConfigureContainer is where you can register things directly

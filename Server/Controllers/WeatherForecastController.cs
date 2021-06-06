@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using dotvote.Shared;
-using dotvote.Shared.Models;
+using chores.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace dotvote.Server.Controllers
+namespace chores.Server.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]

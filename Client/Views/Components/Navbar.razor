@@ -7,7 +7,7 @@
 
 		<div class="@NavbarClassName">
 			<ul class="navbar-nav mr-auto">
-				@foreach (var (name, route) in Items)
+				@foreach ((string name, string route) in Items)
 				{
 					<li class="nav-item">
 						<a class="nav-link" href="@route">@name</a>
