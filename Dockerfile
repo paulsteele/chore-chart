@@ -1,23 +1,23 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.402-alpine3.12 as builder
-WORKDIR /dotvote
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as builder
+WORKDIR /chores
 
-COPY dotvote.sln .
-COPY Client/dotvote.Client.csproj Client/dotvote.Client.csproj
-COPY Server/dotvote.Server.csproj Server/dotvote.Server.csproj
-COPY Shared/dotvote.Shared.csproj Shared/dotvote.Shared.csproj
+COPY chores.sln .
+COPY Client/chores.Client.csproj Client/chores.Client.csproj
+COPY Server/chores.Server.csproj Server/chores.Server.csproj
+COPY Shared/chores.Shared.csproj Shared/chores.Shared.csproj
 
-RUN dotnet restore dotvote.sln
+RUN dotnet restore chores.sln
 
 COPY . .
 
 RUN dotnet publish -c Release
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.8-alpine3.12 as runner
-WORKDIR /dotvote
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 as runner
+WORKDIR /chores
 
-COPY --from=builder /dotvote/Client/bin/Release/netstandard2.1/publish ./Client
-COPY --from=builder /dotvote/Server/bin/Release/netcoreapp3.1/publish ./Server
+COPY --from=builder /chores/Client/bin/Release/net5.0/publish ./Client
+COPY --from=builder /chores/Server/bin/Release/net5.0/publish ./Server
 
-WORKDIR /dotvote/Client
+WORKDIR /chores/Client
 
-ENTRYPOINT [ "dotnet", "/dotvote/Server/dotvote.Server.dll"]
+ENTRYPOINT [ "dotnet", "/chores/Server/chores.Server.dll"]
