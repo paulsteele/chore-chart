@@ -1,6 +1,7 @@
 .git
 .idea
 k8s.template.yaml
+tools
 README.md
 **/bin
 **/obj
