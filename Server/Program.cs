@@ -12,8 +12,7 @@ namespace chores.Server
 			IHost host = Host.CreateDefaultBuilder(args)
 				.UseServiceProviderFactory(new AutofacServiceProviderFactory())
 				.ConfigureWebHostDefaults(webHostBuilder => {
-					webHostBuilder
-						.UseStartup<Startup>();
+					webHostBuilder.UseStartup<Startup>();
 				})
 				.Build();
 

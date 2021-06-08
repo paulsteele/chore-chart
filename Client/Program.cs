@@ -3,7 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using chores.Client.Logging;
+using chores.Shared.Registration;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace chores.Client
 {
@@ -21,8 +24,9 @@ namespace chores.Client
 
 		private static void Register(ContainerBuilder builder)
 		{
-			// add any registrations here
 			builder.Register(context => new HttpClient() {BaseAddress = BaseAddress});
+			builder.Register(context => new WebLoggerFactory()).As<ILoggerFactory>();
+			CommonContainer.Register(builder);
 		}
 	}
 }
