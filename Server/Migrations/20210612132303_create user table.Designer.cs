@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using chores.Server.Database;
+using home.Server.Database;
 
-namespace chores.Server.Migrations
+namespace home.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20210612132303_create user table")]
@@ -19,7 +19,7 @@ namespace chores.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.7");
 
-            modelBuilder.Entity("chores.Shared.Models.User", b =>
+            modelBuilder.Entity("home.Shared.Models.User", b =>
                 {
                     b.Property<byte[]>("Id")
                         .ValueGeneratedOnAdd()

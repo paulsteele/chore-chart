@@ -3,12 +3,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using chores.Client.Logging;
-using chores.Shared.Registration;
+using home.Client.Logging;
+using home.Shared.Registration;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace chores.Client
+namespace home.Client
 {
 	public class Program {
 		private static Uri BaseAddress;

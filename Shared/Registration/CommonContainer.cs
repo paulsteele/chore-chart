@@ -1,7 +1,7 @@
 using Autofac;
 using Microsoft.Extensions.Logging;
 
-namespace chores.Shared.Registration {
+namespace home.Shared.Registration {
 	public class CommonContainer {
 
 		public static void Register(ContainerBuilder containerBuilder) {

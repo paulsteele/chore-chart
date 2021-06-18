@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\chores.Client.csproj" />
-    <ProjectReference Include="..\Shared\chores.Shared.csproj" />
+    <ProjectReference Include="..\Client\home.Client.csproj" />
+    <ProjectReference Include="..\Shared\home.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

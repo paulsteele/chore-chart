@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace chores.Server.Migrations
+namespace home.Server.Migrations
 {
     public partial class createusertable : Migration
     {

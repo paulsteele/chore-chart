@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace chores.Client.Logging {
+namespace home.Client.Logging {
 	public class WebLoggerFactory : ILoggerFactory {
 		public void Dispose() {
 			throw new System.NotImplementedException();

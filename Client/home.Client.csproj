@@ -15,7 +15,7 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" /> 
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared\chores.Shared.csproj" />
+    <ProjectReference Include="..\Shared\home.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Layouts\MainLayout.razor" />

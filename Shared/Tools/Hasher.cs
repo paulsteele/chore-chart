@@ -1,4 +1,4 @@
-namespace chores.Shared.Tools {
+namespace home.Shared.Tools {
 	public interface IHasher {
 		string Hash(string input);
 	}

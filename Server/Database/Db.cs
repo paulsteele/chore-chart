@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace chores.Server.Database {
+namespace home.Server.Database {
 	public interface IDb {
 		void Init();
 	}

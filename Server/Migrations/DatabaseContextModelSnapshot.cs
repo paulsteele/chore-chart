@@ -3,9 +3,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using chores.Server.Database;
+using home.Server.Database;
 
-namespace chores.Server.Migrations
+namespace home.Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     partial class DatabaseContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace chores.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.7");
 
-            modelBuilder.Entity("chores.Shared.Models.User", b =>
+            modelBuilder.Entity("home.Shared.Models.User", b =>
                 {
                     b.Property<byte[]>("Id")
                         .ValueGeneratedOnAdd()
