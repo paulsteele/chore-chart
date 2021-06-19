@@ -1,23 +1,23 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as builder
-WORKDIR /home
+WORKDIR /hub
 
-COPY chores.sln .
-COPY Client/home.Client.csproj Client/home.Client.csproj
-COPY Server/home.Server.csproj Server/home.Server.csproj
-COPY Shared/home.Shared.csproj Shared/home.Shared.csproj
+COPY hub.sln .
+COPY Client/hub.Client.csproj Client/hub.Client.csproj
+COPY Server/hub.Server.csproj Server/hub.Server.csproj
+COPY Shared/hub.Shared.csproj Shared/hub.Shared.csproj
 
-RUN dotnet restore home.sln
+RUN dotnet restore hub.sln
 
 COPY . .
 
 RUN dotnet publish -c Release
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 as runner
-WORKDIR /home
+WORKDIR /hub
 
-COPY --from=builder /home/Client/bin/Release/net5.0/publish ./Client
-COPY --from=builder /home/Server/bin/Release/net5.0/publish ./Server
+COPY --from=builder /hub/Client/bin/Release/net5.0/publish ./Client
+COPY --from=builder /hub/Server/bin/Release/net5.0/publish ./Server
 
-WORKDIR /home/Client
+WORKDIR /hub/Client
 
-ENTRYPOINT [ "dotnet", "/home/Server/home.Server.dll"]
+ENTRYPOINT [ "dotnet", "/hub/Server/hub.Server.dll"]

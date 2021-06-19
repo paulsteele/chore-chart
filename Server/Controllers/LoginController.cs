@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using home.Shared.Models;
+using hub.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace home.Server.Controllers {
+namespace hub.Server.Controllers {
 
 	[ApiController]
 	[Route("[controller]")]

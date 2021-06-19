@@ -3,12 +3,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using home.Client.Logging;
-using home.Shared.Registration;
+using hub.Client.Logging;
+using hub.Shared.Registration;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace home.Client
+namespace hub.Client
 {
 	public class Program {
 		private static Uri BaseAddress;

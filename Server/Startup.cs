@@ -1,8 +1,8 @@
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using home.Server.Database;
-using home.Shared.Registration;
+using hub.Server.Database;
+using hub.Shared.Registration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace home.Server
+namespace hub.Server
 {
 	public class Startup
 	{

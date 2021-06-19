@@ -1,7 +1,7 @@
 using Autofac;
 using Microsoft.Extensions.Logging;
 
-namespace home.Shared.Registration {
+namespace hub.Shared.Registration {
 	public class CommonContainer {
 
 		public static void Register(ContainerBuilder containerBuilder) {

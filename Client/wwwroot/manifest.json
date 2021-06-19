@@ -1,6 +1,6 @@
 {
-  "name": "home",
-  "short_name": "home",
+  "name": "hub",
+  "short_name": "hub",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

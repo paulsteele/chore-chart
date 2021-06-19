@@ -1,4 +1,4 @@
-namespace home.Shared.Tools {
+namespace hub.Shared.Tools {
 	public interface IHasher {
 		string Hash(string input);
 	}

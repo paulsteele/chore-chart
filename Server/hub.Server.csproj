@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\home.Client.csproj" />
-    <ProjectReference Include="..\Shared\home.Shared.csproj" />
+    <ProjectReference Include="..\Client\hub.Client.csproj" />
+    <ProjectReference Include="..\Shared\hub.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

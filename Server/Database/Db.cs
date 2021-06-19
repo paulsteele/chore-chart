@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace home.Server.Database {
+namespace hub.Server.Database {
 	public interface IDb {
 		void Init();
 	}
