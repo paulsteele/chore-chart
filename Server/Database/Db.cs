@@ -8,16 +8,16 @@ namespace hub.Server.Database {
 
 	public class Db : IDb {
 		private readonly ILogger _logger;
-		private readonly DatabaseContext _databaseContext;
+		public readonly DatabaseContext DatabaseContext;
 
 		public Db(ILogger logger, DatabaseContext databaseContext) {
 			_logger = logger;
-			_databaseContext = databaseContext;
+			DatabaseContext = databaseContext;
 		}
 
 		public void Init() {
 			_logger.LogInformation("Initializing Database");
-			_databaseContext.Database.Migrate();
+			DatabaseContext.Database.Migrate();
 		}
 	}
 }

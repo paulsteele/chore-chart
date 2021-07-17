@@ -14,6 +14,6 @@ namespace hub.Server.Database {
 			optionsBuilder.UseMySQL($"Server={url};Port={port};Database={database};Uid={user};Pwd={pass};");
 		}
 
-		private DbSet<User> Users { get; set; }
+		public DbSet<User> Users { get; set; }
 	}
 }
