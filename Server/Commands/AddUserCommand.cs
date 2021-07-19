@@ -6,10 +6,10 @@ using hub.Shared.Tools;
 
 namespace hub.Server.Commands {
 	public class AddUserCommand {
-		private readonly Db _db;
+		private readonly IDb _db;
 		private readonly IHasher _hasher;
 
-		public AddUserCommand(Db db, IHasher hasher) {
+		public AddUserCommand(IDb db, IHasher hasher) {
 			_db = db;
 			_hasher = hasher;
 		}
@@ -26,7 +26,7 @@ namespace hub.Server.Commands {
 			var pass = Console.ReadLine();
 			var userToAdd = new User {
 				Email = email,
-				PasswordHash = _hasher.Hash(_hasher.Hash(pass)) // client will send over a has but the server would hash it again
+				PasswordHash = _hasher.Hash(pass)
 			};
 
 			dbDatabaseContext.Users.Add(userToAdd);

@@ -1,4 +1,11 @@
+@using hub.Shared.Models
+@using Microsoft.Extensions.Logging
+@using System.Net.Http.Json
+@using System.Globalization
+@using hub.Shared.Tools
 @inherits LayoutComponentBase
+@inject HttpClient _http
+@inject ILogger _logger
 
 @{
 	var options = new List<(string, string)> {("About", "/about")};
@@ -10,3 +17,15 @@
 		@Body
 	</div>
 </div>
+
+@code {
+	protected override async Task OnInitializedAsync()
+	{
+		var user = new User {Email = "paul", PasswordHash = "pass"};
+		var response = await _http.PostAsJsonAsync("login", user);
+		if (response.IsSuccessStatusCode) {
+			var session = await response.Content.ReadFromJsonAsync<Session>();
+			_logger.LogInformation(session?.ExpirationTime.ToString(CultureInfo.InvariantCulture));
+		}
+	}
+}
