@@ -20,11 +20,10 @@
 @code {
 	protected override async Task OnInitializedAsync()
 	{
-		var user = new User {Email = "paul", PasswordHash = "pass"};
+		var user = new LoginModel {Username = "paul", Password = "pass"};
 		var response = await _http.PostAsJsonAsync("login", user);
 		if (response.IsSuccessStatusCode) {
-			var session = await response.Content.ReadFromJsonAsync<Session>();
-			_logger.LogInformation(session?.ExpirationTime.ToString(CultureInfo.InvariantCulture));
+			var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
 		}
 	}
 }

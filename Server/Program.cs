@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using hub.Server.Commands;
@@ -10,7 +11,7 @@ namespace hub.Server
 	public static class Program {
 		private const string AddUserCommand = "addUser";
 
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			IHost host = Host.CreateDefaultBuilder(args)
 				.UseServiceProviderFactory(new AutofacServiceProviderFactory())
@@ -20,12 +21,12 @@ namespace hub.Server
 				.Build();
 
 			if (args.Contains(AddUserCommand)) {
-				host.Services.GetAutofacRoot().Resolve<AddUserCommand>().StartCommand();
+				await host.Services.GetAutofacRoot().Resolve<AddUserCommand>().StartCommand();
 
 				return;
 			}
 
-			host.Run();
+			await host.RunAsync();
 		}
 	}
 }

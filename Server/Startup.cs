@@ -2,13 +2,15 @@ using System.Reflection;
 using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using hub.Server.Configuration;
 using hub.Server.Database;
 using hub.Shared.Registration;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -59,7 +61,15 @@ namespace hub.Server
 		}
 
 		public void ConfigureServices(IServiceCollection services) {
-			services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<DatabaseContext>();
+			var configuration = new EnvironmentVariableConfiguration();
+			services.AddDefaultIdentity<IdentityUser>((options => {
+				options.Password.RequireDigit = false;
+				options.Password.RequiredLength = 0;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequiredUniqueChars = 0;
+				options.Password.RequireNonAlphanumeric = false;
+			})).AddEntityFrameworkStores<DatabaseContext>();
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
 				{
@@ -69,12 +79,17 @@ namespace hub.Server
 						ValidateAudience = true,
 						ValidateLifetime = true,
 						ValidateIssuerSigningKey = true,
-						ValidIssuer = Configuration["JwtIssuer"],
-						ValidAudience = Configuration["JwtAudience"],
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
+						ValidIssuer = configuration.JwtIssuer,
+						ValidAudience = configuration.JwtAudience,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.JwtSecurityKey))
 					};
 				});
-			services.AddControllersWithViews();
+			services.AddControllersWithViews(options => {
+				var policy = new AuthorizationPolicyBuilder()
+					.RequireAuthenticatedUser()
+					.Build();
+				options.Filters.Add(new AuthorizeFilter(policy));
+			});
 			services.AddRazorPages();
 		}
 
@@ -88,6 +103,7 @@ namespace hub.Server
 			builder.Register(context => LoggerFactory.Create(logBuilder => logBuilder.AddConsole())).As<ILoggerFactory>();
 
 			builder.RegisterType<Db>().As<IDb>().SingleInstance();
+			builder.RegisterType<EnvironmentVariableConfiguration>().As<IEnvironmentVariableConfiguration>().SingleInstance();
 			CommonContainer.Register(builder);
 		}
 	}

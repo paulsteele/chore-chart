@@ -1,36 +1,34 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using hub.Server.Database;
-using hub.Shared.Models;
-using hub.Shared.Tools;
+using Microsoft.AspNetCore.Identity;
 
 namespace hub.Server.Commands {
 	public class AddUserCommand {
 		private readonly IDb _db;
-		private readonly IHasher _hasher;
+		private readonly UserManager<IdentityUser> _userManager;
 
-		public AddUserCommand(IDb db, IHasher hasher) {
+		public AddUserCommand(IDb db, UserManager<IdentityUser> userManager) {
 			_db = db;
-			_hasher = hasher;
+			_userManager = userManager;
 		}
 
-		public void StartCommand() {
-			Console.WriteLine("Enter the desired email address:");
-			var email = Console.ReadLine();
-			using var dbDatabaseContext = _db.DatabaseContext;
-			var existingUser = dbDatabaseContext.Users.FirstOrDefault(user => user.Email == email);
+		public async Task StartCommand() {
+			Console.WriteLine("Enter the desired username:");
+			var username = Console.ReadLine();
+			var existingUser = _userManager.Users.FirstOrDefault(user => user.UserName == username);
 			if (existingUser != null) {
 				Console.WriteLine("User already exists");
+				return;
 			}
+
 			Console.WriteLine("Enter the desired password:");
 			var pass = Console.ReadLine();
-			var userToAdd = new User {
-				Email = email,
-				PasswordHash = _hasher.Hash(pass)
-			};
 
-			//dbDatabaseContext.Users.Add(userToAdd);
-		  //dbDatabaseContext.SaveChanges();
+			var newUser = new IdentityUser { UserName = username };
+
+			await _userManager.CreateAsync(newUser, pass);
 		}
 	}
 }

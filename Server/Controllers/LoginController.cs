@@ -1,57 +1,65 @@
 using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using hub.Server.Configuration;
 using hub.Server.Database;
 using hub.Shared.Models;
 using hub.Shared.Tools;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace hub.Server.Controllers {
 
 	[ApiController]
-	[Authorize]
+	[AllowAnonymous]
 	[Route("login")]
 	public class LoginController : ControllerBase {
 		private readonly ILogger _logger;
-		private readonly IDb _db;
-		private readonly IHasher _hasher;
-		private readonly INowTimeProvider _nowTimeProvider;
+		private readonly SignInManager<IdentityUser> _signInManager;
+		private readonly EnvironmentVariableConfiguration _configuration;
 
 		public LoginController(
 			ILogger logger,
-			IDb db,
-			IHasher hasher,
-			INowTimeProvider nowTimeProvider
+			SignInManager<IdentityUser> signInManager,
+			EnvironmentVariableConfiguration configuration
 		) {
 			_logger = logger;
-			_db = db;
-			_hasher = hasher;
-			_nowTimeProvider = nowTimeProvider;
+			_signInManager = signInManager;
+			_configuration = configuration;
 		}
 
 		[HttpPost]
-		public IActionResult Login([FromBody]User user) {
-			var dbUser = _db.DatabaseContext.Users.FirstOrDefault(u => u.Email == user.Email);
-			if (dbUser == null) {
-				return NotFound();
-			}
+		public async Task<IActionResult> Login([FromBody]LoginModel loginModel) {
 
-			if (!_hasher.Validate(user.PasswordHash, dbUser.PasswordHash)) {
-				return NotFound();
-			}
+			var result = await _signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
 
-			//var session = new Session {
-			//	UserId = dbUser.Id,
-			//	ExpirationTime = _nowTimeProvider.Now.AddDays(7)
-			//}
-//
-//			_db.DatabaseContext.Sessions.Add(session);
-//			_db.DatabaseContext.SaveChanges();
+			if (!result.Succeeded) return BadRequest(new LoginResult { Success = false, Error = "Username or password are invalid." });
 
-			return Ok(null);
+			var claims = new[]
+			{
+				new Claim(ClaimTypes.Name, loginModel.Username)
+			};
+
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.JwtSecurityKey));
+			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+			var expiry = DateTime.Now.AddMinutes(_configuration.JwtExpiryHours);
+
+			var token = new JwtSecurityToken(
+				_configuration.JwtIssuer,
+				_configuration.JwtAudience,
+				claims,
+				expires: expiry,
+				signingCredentials: creds
+			);
+
+			return Ok(new LoginResult { Success = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
 		}
 	}
 }
