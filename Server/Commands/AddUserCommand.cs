@@ -29,8 +29,8 @@ namespace hub.Server.Commands {
 				PasswordHash = _hasher.Hash(pass)
 			};
 
-			dbDatabaseContext.Users.Add(userToAdd);
-			dbDatabaseContext.SaveChanges();
+			//dbDatabaseContext.Users.Add(userToAdd);
+		  //dbDatabaseContext.SaveChanges();
 		}
 	}
 }

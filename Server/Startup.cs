@@ -1,15 +1,19 @@
 using System.Reflection;
+using System.Text;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using hub.Server.Database;
 using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace hub.Server
 {
@@ -54,11 +58,24 @@ namespace hub.Server
 			setupScope.Resolve<IDb>().Init();
 		}
 
-		public void ConfigureServices(IServiceCollection services)
-		{
+		public void ConfigureServices(IServiceCollection services) {
+			services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<DatabaseContext>();
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(options =>
+				{
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = true,
+						ValidateAudience = true,
+						ValidateLifetime = true,
+						ValidateIssuerSigningKey = true,
+						ValidIssuer = Configuration["JwtIssuer"],
+						ValidAudience = Configuration["JwtAudience"],
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityKey"]))
+					};
+				});
 			services.AddControllersWithViews();
 			services.AddRazorPages();
-			services.AddAuthentication(defaultScheme:
 		}
 
 		public void ConfigureContainer(ContainerBuilder builder)

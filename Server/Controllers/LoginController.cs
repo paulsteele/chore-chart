@@ -5,12 +5,14 @@ using System.Net.Http;
 using hub.Server.Database;
 using hub.Shared.Models;
 using hub.Shared.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace hub.Server.Controllers {
 
 	[ApiController]
+	[Authorize]
 	[Route("login")]
 	public class LoginController : ControllerBase {
 		private readonly ILogger _logger;
@@ -41,15 +43,15 @@ namespace hub.Server.Controllers {
 				return NotFound();
 			}
 
-			var session = new Session {
-				UserId = dbUser.Id,
-				ExpirationTime = _nowTimeProvider.Now.AddDays(7)
-			};
+			//var session = new Session {
+			//	UserId = dbUser.Id,
+			//	ExpirationTime = _nowTimeProvider.Now.AddDays(7)
+			//}
+//
+//			_db.DatabaseContext.Sessions.Add(session);
+//			_db.DatabaseContext.SaveChanges();
 
-			_db.DatabaseContext.Sessions.Add(session);
-			_db.DatabaseContext.SaveChanges();
-
-			return Ok(session);
+			return Ok(null);
 		}
 	}
 }
