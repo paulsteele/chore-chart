@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using hub.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace hub.Client.Authentication {
 	public interface IAuthService {
@@ -18,12 +20,14 @@ namespace hub.Client.Authentication {
 		ReadOnlyCollection<Claim> Claims { get; }
 	}
 
-	public class AuthService : AuthenticationStateProvider, IAuthService, IAuthorizationPolicyProvider, IAuthorizationService{
+	public class AuthService : AuthenticationStateProvider, IAuthService {
 		private readonly HttpClient _httpClient;
+		private readonly ILogger _logger;
 
-		public AuthService(HttpClient httpClient)
+		public AuthService(HttpClient httpClient, ILogger logger)
 		{
 			_httpClient = httpClient;
+			_logger = logger;
 			InternalClaims = new List<Claim>();
 			Claims = new ReadOnlyCollection<Claim>(InternalClaims);
 		}
@@ -40,9 +44,13 @@ namespace hub.Client.Authentication {
 			if (response.IsSuccessStatusCode && loginResult is {Token: { }}) {
 				InternalClaims.Clear();
 				InternalClaims.AddRange(ParseClaimsFromJwt(loginResult.Token));
-			}
-			//_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 
+				var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, loginModel.Username) }, "apiauth"));
+				var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+				NotifyAuthenticationStateChanged(authState);
+			}
+
+			//_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 			return loginResult;
 		}
 
@@ -95,43 +103,9 @@ namespace hub.Client.Authentication {
 
 		public override Task<AuthenticationState> GetAuthenticationStateAsync() {
 			var tsc = new TaskCompletionSource<AuthenticationState>();
-			tsc.SetResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(Claims, "jwt"))));
-			return tsc.Task;
-		}
-
-		public Task<AuthorizationPolicy> GetPolicyAsync(string policyName) {
-			return GetDefaultPolicyAsync();
-		}
-
-		public Task<AuthorizationPolicy> GetDefaultPolicyAsync() {
-			var tsc = new TaskCompletionSource<AuthorizationPolicy>();
-
-			var policy = new AuthorizationPolicyBuilder()
-				.RequireAuthenticatedUser()
-				.Build();
-
-			tsc.SetResult(policy);
-
-			return tsc.Task;
-		}
-
-		public Task<AuthorizationPolicy> GetFallbackPolicyAsync() {
-			return GetDefaultPolicyAsync();
-		}
-
-		public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object? resource, IEnumerable<IAuthorizationRequirement> requirements) {
-			var tsc = new TaskCompletionSource<AuthorizationResult>();
-
-			tsc.SetResult(AuthorizationResult.Failed());
-
-			return tsc.Task;
-		}
-
-		public Task<AuthorizationResult> AuthorizeAsync(ClaimsPrincipal user, object? resource, string policyName) {
-			var tsc = new TaskCompletionSource<AuthorizationResult>();
-
-			tsc.SetResult(AuthorizationResult.Failed());
-
+			var claimsIdentity = Claims.Count > 0 ? new ClaimsIdentity(Claims, "jwt") : new ClaimsIdentity();
+			tsc.SetResult(new AuthenticationState(new ClaimsPrincipal(claimsIdentity)));
+			_logger.Log(LogLevel.Debug, "getting aaaauth state");
 			return tsc.Task;
 		}
 	}

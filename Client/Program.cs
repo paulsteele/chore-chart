@@ -9,6 +9,7 @@ using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace hub.Client
@@ -21,6 +22,7 @@ namespace hub.Client
 			_baseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 			builder.ConfigureContainer(new AutofacServiceProviderFactory(Register));
 			builder.RootComponents.Add<App>("#app");
+			builder.Services.AddAuthorizationCore();
 
 			await builder.Build().RunAsync();
 		}
@@ -31,8 +33,8 @@ namespace hub.Client
 			builder.Register(context => new WebLoggerFactory()).As<ILoggerFactory>();
 			builder.RegisterType<AuthService>()
 				.As<IAuthService>()
-				.As<IAuthorizationPolicyProvider>()
-				.As<IAuthorizationService>()
+				//.As<IAuthorizationPolicyProvider>()
+				//.As<IAuthorizationService>()
 				.As<AuthenticationStateProvider>()
 				.SingleInstance();
 			CommonContainer.Register(builder);
