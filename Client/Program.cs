@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -21,22 +22,25 @@ namespace hub.Client
 			var builder = WebAssemblyHostBuilder.CreateDefault(args);
 			_baseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 			builder.ConfigureContainer(new AutofacServiceProviderFactory(Register));
-			builder.RootComponents.Add<App>("#app");
 			builder.Services.AddAuthorizationCore();
+			builder.RootComponents.Add<App>("#app");
 
 			await builder.Build().RunAsync();
 		}
 
 		private static void Register(ContainerBuilder builder)
 		{
+			var assembly = Assembly.GetExecutingAssembly();
+			builder.RegisterAssemblyTypes(assembly);
+			builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+
 			builder.Register(context => new HttpClient() {BaseAddress = _baseAddress});
 			builder.Register(context => new WebLoggerFactory()).As<ILoggerFactory>();
 			builder.RegisterType<AuthService>()
 				.As<IAuthService>()
-				//.As<IAuthorizationPolicyProvider>()
-				//.As<IAuthorizationService>()
 				.As<AuthenticationStateProvider>()
 				.SingleInstance();
+
 			CommonContainer.Register(builder);
 		}
 	}

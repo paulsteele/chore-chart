@@ -7,8 +7,8 @@ namespace hub.Shared.Registration {
 
 		public static void Register(ContainerBuilder containerBuilder) {
 			containerBuilder.Register(context => context.Resolve<ILoggerFactory>().CreateLogger<CommonContainer>()).As<ILogger>();
-			var assembly = Assembly.GetExecutingAssembly();
 
+			var assembly = Assembly.GetExecutingAssembly();
 			containerBuilder.RegisterAssemblyTypes(assembly);
 			containerBuilder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
 		}

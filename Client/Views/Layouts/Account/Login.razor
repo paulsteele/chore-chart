@@ -1,0 +1,51 @@
+@using Microsoft.Extensions.Logging
+@using hub.Client.Authentication
+@using hub.Client.ViewModels.Account
+@using hub.Shared.Models
+@inherits LayoutComponentBase
+
+@inject HttpClient _http
+@inject ILogger _logger
+@inject IAuthService _authService
+@inject ILoginViewModel _loginViewModel
+@attribute [AllowAnonymous]
+
+@page "/login"
+
+<div class="main">
+	<AuthorizeView>
+		<Authorized>
+			You're already logged in @context.User.Identity.Name.
+		</Authorized>
+		<NotAuthorized>
+			<div class="page-header">
+				<h1>Login</h1>
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<EditForm Context="editContext" Model="_loginModel" OnValidSubmit="Submit">
+						<DataAnnotationsValidator/>
+						<label for="username-entry" class="py-1">Username</label>
+						<input @bind-value="_loginModel.Username" type="text" id="username-entry" class="form-control py-1">
+						<label for="password-entry" class="py-1">Password</label>
+						<input @bind-value="_loginModel.Password" type="password" id="password-entry" class="form-control py-1">
+						<button type="submit" class="btn btn-primary btn-lg my-2 float-right">Submit</button>
+					</EditForm>
+				</div>
+			</div>
+		</NotAuthorized>
+	</AuthorizeView>
+	<div class="container">
+		@Body
+	</div>
+</div>
+
+@code {
+	readonly LoginModel _loginModel = new LoginModel();
+
+	private void Submit(EditContext context) {
+		var model = (LoginModel) context.Model;
+		_loginViewModel.Login(model);
+	}
+
+}
