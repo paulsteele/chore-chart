@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using hub.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -17,23 +18,23 @@ namespace hub.Client.Authentication {
 	public interface IAuthService {
 		Task<LoginResult> Login(LoginModel loginModel);
 		Task Logout();
-		ReadOnlyCollection<Claim> Claims { get; }
 	}
 
 	public class AuthService : AuthenticationStateProvider, IAuthService {
 		private readonly HttpClient _httpClient;
 		private readonly ILogger _logger;
+		private readonly ILocalStorageService _localStorageService;
 
-		public AuthService(HttpClient httpClient, ILogger logger)
+		public AuthService(
+			HttpClient httpClient,
+			ILogger logger,
+			ILocalStorageService localStorageService
+		)
 		{
 			_httpClient = httpClient;
 			_logger = logger;
-			InternalClaims = new List<Claim>();
-			Claims = new ReadOnlyCollection<Claim>(InternalClaims);
+			_localStorageService = localStorageService;
 		}
-
-		public ReadOnlyCollection<Claim> Claims { get;}
-		private List<Claim> InternalClaims { get; }
 
 		public async Task<LoginResult> Login(LoginModel loginModel)
 		{
@@ -42,8 +43,7 @@ namespace hub.Client.Authentication {
 			var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
 
 			if (response.IsSuccessStatusCode && loginResult is {Token: { }}) {
-				InternalClaims.Clear();
-				InternalClaims.AddRange(ParseClaimsFromJwt(loginResult.Token));
+				await _localStorageService.SetItemAsync("authToken", loginResult.Token);
 
 				var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, loginModel.Username) }, "apiauth"));
 				var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
@@ -93,20 +93,18 @@ namespace hub.Client.Authentication {
 			return Convert.FromBase64String(base64);
 		}
 
-		public Task Logout()
+		public async Task Logout()
 		{
-			//await _localStorage.RemoveItemAsync("authToken");
-			//((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsLoggedOut();
-			//_httpClient.DefaultRequestHeaders.Authorization = null;
-			return Task.CompletedTask;
+			await _localStorageService.RemoveItemAsync("authToken");
+			var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
+			var authState = Task.FromResult(new AuthenticationState(anonymousUser));
+			NotifyAuthenticationStateChanged(authState);
 		}
 
-		public override Task<AuthenticationState> GetAuthenticationStateAsync() {
-			var tsc = new TaskCompletionSource<AuthenticationState>();
-			var claimsIdentity = Claims.Count > 0 ? new ClaimsIdentity(Claims, "jwt") : new ClaimsIdentity();
-			tsc.SetResult(new AuthenticationState(new ClaimsPrincipal(claimsIdentity)));
-			_logger.Log(LogLevel.Debug, "getting aaaauth state");
-			return tsc.Task;
+		public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
+			var savedToken = await _localStorageService.GetItemAsync<string>("authToken");
+			var claimsIdentity = !string.IsNullOrWhiteSpace(savedToken) ? new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt") : new ClaimsIdentity();
+			return new AuthenticationState(new ClaimsPrincipal(claimsIdentity));
 		}
 	}
 }

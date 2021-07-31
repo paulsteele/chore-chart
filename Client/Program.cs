@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Blazored.LocalStorage;
 using hub.Client.Authentication;
 using hub.Client.Logging;
 using hub.Shared.Registration;
@@ -23,6 +24,7 @@ namespace hub.Client
 			_baseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 			builder.ConfigureContainer(new AutofacServiceProviderFactory(Register));
 			builder.Services.AddAuthorizationCore();
+			builder.Services.AddBlazoredLocalStorage();
 			builder.RootComponents.Add<App>("#app");
 
 			await builder.Build().RunAsync();
