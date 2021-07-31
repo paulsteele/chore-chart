@@ -1,15 +1,22 @@
 ﻿@page "/"
+@using hub.Client.ViewModels.Scale
 @attribute [AllowAnonymous]
 @inject NavigationManager _navigationManager
+@inject IScaleViewModel _scaleViewModel
 
 <AuthorizeView>
 	<Authorized>
-		<h1>Hello, world!</h1>
-
-		<p>Welcome to your new app.</p>
+		<div class="text-center">
+			<button type="button" class="btn btn-primary btn-lg m-5" @onclick="StartScanning">Scan</button>
+		</div>
 	</Authorized>
 	<NotAuthorized>
 		@if (true) { _navigationManager.NavigateTo("login"); }
 	</NotAuthorized>
 </AuthorizeView>
 
+@code {
+	private void StartScanning() {
+		_scaleViewModel.StartScanning();
+	}
+}

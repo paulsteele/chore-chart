@@ -1,14 +1,10 @@
 using System;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using hub.Server.Configuration;
-using hub.Server.Database;
 using hub.Shared.Models;
-using hub.Shared.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

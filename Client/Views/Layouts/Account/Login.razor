@@ -8,6 +8,7 @@
 @inject ILogger _logger
 @inject IAuthService _authService
 @inject ILoginViewModel _loginViewModel
+@inject NavigationManager _navigationManager
 @attribute [AllowAnonymous]
 
 @page "/login"
@@ -43,9 +44,12 @@
 @code {
 	readonly LoginModel _loginModel = new LoginModel();
 
-	private void Submit(EditContext context) {
+	private async Task Submit(EditContext context) {
 		var model = (LoginModel) context.Model;
-		_loginViewModel.Login(model);
+		var result = await _loginViewModel.Login(model);
+		if (result.Success) {
+			_navigationManager.NavigateTo("/");
+		}
 	}
 
 }
