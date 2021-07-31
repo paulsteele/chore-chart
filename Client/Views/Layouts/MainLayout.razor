@@ -1,30 +1,25 @@
 @using Microsoft.Extensions.Logging
 @using hub.Client.Authentication
-@using hub.Shared.Models
 @inherits LayoutComponentBase
 @inject HttpClient _http
 @inject ILogger _logger
 @inject IAuthService _authService
 
 @{
-	var options = new List<(string, string)> {("About", "/about")};
+	var anonymousOptions = new List<(string, string)> {("Login", "/login")};
+	var authedOptions = new List<(string, string)> {("About", "/about")};
 }
 
 <div class="main">
-	<Navbar Items="@options"></Navbar>
+	<AuthorizeView>
+		<Authorized>
+			<Navbar Items="@authedOptions"></Navbar>
+		</Authorized>
+		<NotAuthorized>
+			<Navbar Items="@anonymousOptions"></Navbar>
+		</NotAuthorized>
+	</AuthorizeView>
 	<div class="container">
 		@Body
 	</div>
 </div>
-
-@code {
-	[CascadingParameter] private Task<AuthenticationState> authenticationStateTask { get; set; }
-	protected override async Task OnInitializedAsync() {
-		var result = await _authService.Login(new LoginModel() {Username = "paul", Password = "pass"});
-		_logger.Log(LogLevel.Debug, result.Success.ToString());
-
-		var authed = await authenticationStateTask;
-		_logger.Log(LogLevel.Debug, (authed.User.Identity.Name));
-		_logger.Log(LogLevel.Debug, authed.User.Identity.IsAuthenticated.ToString());
-	}
-}
