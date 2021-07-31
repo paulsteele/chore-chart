@@ -3,8 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using hub.Client.Authentication;
 using hub.Client.Logging;
 using hub.Shared.Registration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -26,6 +29,12 @@ namespace hub.Client
 		{
 			builder.Register(context => new HttpClient() {BaseAddress = _baseAddress});
 			builder.Register(context => new WebLoggerFactory()).As<ILoggerFactory>();
+			builder.RegisterType<AuthService>()
+				.As<IAuthService>()
+				.As<IAuthorizationPolicyProvider>()
+				.As<IAuthorizationService>()
+				.As<AuthenticationStateProvider>()
+				.SingleInstance();
 			CommonContainer.Register(builder);
 		}
 	}

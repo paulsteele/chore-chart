@@ -62,14 +62,18 @@ namespace hub.Server
 
 		public void ConfigureServices(IServiceCollection services) {
 			var configuration = new EnvironmentVariableConfiguration();
-			services.AddDefaultIdentity<IdentityUser>((options => {
-				options.Password.RequireDigit = false;
-				options.Password.RequiredLength = 0;
-				options.Password.RequireLowercase = false;
-				options.Password.RequireUppercase = false;
-				options.Password.RequiredUniqueChars = 0;
-				options.Password.RequireNonAlphanumeric = false;
-			})).AddEntityFrameworkStores<DatabaseContext>();
+			services
+				.AddDefaultIdentity<IdentityUser>((options => {
+					options.Password.RequireDigit = false;
+					options.Password.RequiredLength = 0;
+					options.Password.RequireLowercase = false;
+					options.Password.RequireUppercase = false;
+					options.Password.RequiredUniqueChars = 0;
+					options.Password.RequireNonAlphanumeric = false;
+				}))
+				.AddRoles<IdentityRole>()
+				.AddEntityFrameworkStores<DatabaseContext>();
+
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
 				{

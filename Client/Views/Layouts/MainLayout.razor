@@ -1,7 +1,4 @@
-@using hub.Shared.Models
 @using Microsoft.Extensions.Logging
-@using System.Net.Http.Json
-@using System.Globalization
 @inherits LayoutComponentBase
 @inject HttpClient _http
 @inject ILogger _logger
@@ -20,10 +17,5 @@
 @code {
 	protected override async Task OnInitializedAsync()
 	{
-		var user = new LoginModel {Username = "paul", Password = "pass"};
-		var response = await _http.PostAsJsonAsync("login", user);
-		if (response.IsSuccessStatusCode) {
-			var loginResult = await response.Content.ReadFromJsonAsync<LoginResult>();
-		}
 	}
 }
