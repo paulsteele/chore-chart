@@ -1,0 +1,58 @@
+@using Microsoft.Extensions.Logging
+@using hub.Client.ViewModels.Scale
+@using System.ComponentModel
+@implements IDisposable
+@inject ILogger<Index> _logger
+@inject IScaleSetupViewModel _scaleSetupViewModel
+
+@page "/scale/setup"
+@if (_scaleSetupViewModel.Scanning) {
+	<div class="progress my-4">
+		<div class="progress-bar" role="progressbar" aria-valuenow="@_scaleSetupViewModel.ScanningProgress" aria-valuemin="0" aria-valuemax="@_scaleSetupViewModel.ScanningMax" style="@_scaleSetupViewModel.ScanningProgressWidthStyle">
+		</div>
+	</div>
+	<p>Scanning...</p>
+}
+else {
+	@if (_scaleSetupViewModel.FoundDevices != null) {
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Id</th>
+			</tr>
+			</thead>
+			<tbody>
+			@foreach (var device in _scaleSetupViewModel.FoundDevices) {
+				<tr>
+					<td>@device.Name</td>
+					<td>@device.Id</td>
+				</tr>
+			}
+			</tbody>
+		</table>
+	}
+
+	<div class="text-center">
+		<button type="button" class="btn btn-primary btn-lg m-5" @onclick="StartScanning">Scan</button>
+	</div>
+}
+@code {
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		_scaleSetupViewModel.PropertyChanged += ScaleSetupViewModelOnPropertyChanged;
+	}
+
+	private async Task StartScanning() {
+
+		await _scaleSetupViewModel.ScanForDevices();
+	}
+
+	private void ScaleSetupViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+		StateHasChanged();
+	}
+
+	public void Dispose() {
+		_scaleSetupViewModel.PropertyChanged -= ScaleSetupViewModelOnPropertyChanged;
+	}
+}

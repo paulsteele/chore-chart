@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
@@ -17,6 +18,7 @@ using Microsoft.Extensions.Logging;
 namespace hub.Client.Authentication {
 	public interface IAuthService {
 		Task<LoginResult> Login(LoginModel loginModel);
+		Task<AuthenticationHeaderValue> GetAuthHeader();
 		Task Logout();
 	}
 
@@ -91,6 +93,10 @@ namespace hub.Client.Authentication {
 			}
 
 			return Convert.FromBase64String(base64);
+		}
+
+		public async Task<AuthenticationHeaderValue> GetAuthHeader() {
+			return new AuthenticationHeaderValue("bearer", await _localStorageService.GetItemAsync<string>("authToken"));
 		}
 
 		public async Task Logout()

@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using hub.Server.NativeBle;
+using hub.Shared.Models.Bluetooth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -9,29 +12,40 @@ namespace hub.Server.Controllers {
 	[Route("scale")]
 	public class Scale : ControllerBase{
 		private readonly IBluetooth _bluetooth;
-		private readonly ILogger _logger;
+		private readonly ILogger<Scale> _logger;
 
 		public Scale(
 			IBluetooth bluetooth,
-			ILogger logger
+			ILogger<Scale> logger
 		) {
 			_bluetooth = bluetooth;
 			_logger = logger;
 		}
 
 		[HttpPut]
-		public IActionResult StartScanning() {
+		public async Task<IActionResult> StartScanning() {
 			_bluetooth.Init();
-			_bluetooth.Setup(
-				() => _logger.Log( LogLevel.Debug, "Scanning Start"),
-				() => _logger.Log(LogLevel.Debug, "Scanning End"),
-				(device, id) => _logger.Log(LogLevel.Debug, $"{device} {id} found"),
-				() => _logger.Log(LogLevel.Debug, "Device Connected"),
-				(device, id) => _logger.Log(LogLevel.Debug, $"{device} {id} disconnected")
-			);
-			_bluetooth.Scan();
 
-			return Accepted();
+			var devices = new List<BluetoothDevice>();
+
+			_bluetooth.Setup(
+				() => _logger.LogInformation( "Scanning Start"),
+				() => _logger.LogInformation( "Scanning End"),
+				(device, id) => {
+					_logger.LogInformation(device);
+					devices.Add(new BluetoothDevice{Id = id, Name = device});
+				},
+				() => _logger.LogInformation( "Device Connected"),
+				(device, id) => _logger.LogInformation( $"{device} {id} disconnected")
+			);
+
+			_bluetooth.StartScan();
+			await Task.Delay(20000);
+			_bluetooth.StopScan();
+			_bluetooth.Dispose();
+			_bluetooth.Destruct();
+
+			return Ok(new ScanResult { Success = true, FoundDevices = devices.ToArray()});
 		}
 	}
 }

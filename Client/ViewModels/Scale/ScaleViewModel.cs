@@ -1,21 +1,39 @@
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+using System;
+using System.ComponentModel;
+using hub.Shared.Bases;
+using hub.Shared.Models.Bluetooth;
 
 namespace hub.Client.ViewModels.Scale {
-	public interface IScaleViewModel {
-		Task StartScanning();
+	public interface IScaleViewModel : INotifyPropertyChanged
+	{
+		string ConnectedDeviceName { get; }
+		string ConnectedDeviceId { get; }
+		string CircleClass { get; }
 	}
 
-	public class ScaleViewModel : IScaleViewModel {
-			private HttpClient _httpClient;
+	public class ScaleViewModel : BaseNotifyPropertyChanged, IScaleViewModel {
 
-			public ScaleViewModel(HttpClient httpClient) {
-				_httpClient = httpClient;
-			}
+		private BluetoothStatus _bluetoothStatus;
+		public BluetoothStatus BluetoothStatus {
+			get => _bluetoothStatus;
+			set => SetValue(ref _bluetoothStatus, value);
+		}
 
-			public async Task StartScanning() {
-				var response = await _httpClient.PutAsJsonAsync<object>("scale", this);
+		public string ConnectedDeviceName => BluetoothStatus?.ConnectedDevice?.Name ?? "Unknown Name";
+		public string ConnectedDeviceId => BluetoothStatus?.ConnectedDevice?.Id ?? "Unknown Id";
+
+		public string CircleClass {
+			get {
+				var connectionStatus = _bluetoothStatus?.ConnectionStatus ?? ConnectionStatus.Unknown;
+				var type = connectionStatus switch {
+					ConnectionStatus.Disconnected => "oi-circle-x text-danger",
+					ConnectionStatus.Connected => "oi-circle-check text-success",
+					ConnectionStatus.Unknown => "oi-clock text-warning",
+					_ => ""
+				};
+
+				return $"oi circle-size {type}";
 			}
+		}
 	}
 }
