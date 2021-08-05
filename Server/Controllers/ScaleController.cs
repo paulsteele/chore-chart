@@ -10,13 +10,13 @@ namespace hub.Server.Controllers {
 
 	[ApiController]
 	[Route("scale")]
-	public class Scale : ControllerBase{
+	public class ScaleController : ControllerBase{
 		private readonly IBluetooth _bluetooth;
-		private readonly ILogger<Scale> _logger;
+		private readonly ILogger<ScaleController> _logger;
 
-		public Scale(
+		public ScaleController(
 			IBluetooth bluetooth,
-			ILogger<Scale> logger
+			ILogger<ScaleController> logger
 		) {
 			_bluetooth = bluetooth;
 			_logger = logger;

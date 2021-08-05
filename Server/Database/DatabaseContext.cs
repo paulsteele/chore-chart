@@ -1,3 +1,4 @@
+using hub.Shared.Models.Todo;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ namespace hub.Server.Database {
 		private string user = "root";
 		private string pass = "pass";
 		private string database = "hub";
+		
+		public DbSet<Todo> Todos { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 			optionsBuilder.UseMySQL($"Server={url};Port={port};Database={database};Uid={user};Pwd={pass};");

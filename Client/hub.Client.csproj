@@ -21,9 +21,12 @@
   </ItemGroup>
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Layouts\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Views\Scale\Scale.razor" />
+    <_ContentIncludedByDefault Remove="Views\Scale\ScaleSetup.razor" />
+    <_ContentIncludedByDefault Remove="Views\Account\Login.razor" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Communications" />
+    <Folder Include="Services" />
   </ItemGroup>
 
 </Project>
