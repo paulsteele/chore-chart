@@ -1,0 +1,90 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/hostname: hub.paul-steele.com
+    external-dns.alpha.kubernetes.io/target: "paulsteelehome.duckdns.org"
+  name: hub
+  namespace: deployments
+spec:
+  rules:
+    - host: hub.paul-steele.com
+      http:
+        paths:
+          - backend:
+              serviceName: hub
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - hub.paul-steele.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hub
+  namespace: deployments
+spec:
+  selector:
+    app: hub
+  ports:
+    - name: hub
+      protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hub
+  namespace: deployments
+  labels:
+    app: hub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hub
+  template:
+    metadata:
+      labels:
+        app: hub
+    spec:
+      containers:
+        - name: hub
+          image: registry.paul-steele.com/hub:$BUILD_TAG
+          ports:
+            - name: hub
+              containerPort: 5000
+          imagePullPolicy: Always
+          env:
+            - name: DatabaseUrl
+              value: 192.168.0.101
+            - name: DatabasePort
+              value: 3307
+            - name: DatabaseName
+              value: hub
+            - name: DatabaseUser
+              valueFrom: 
+                secretKeyRef:
+                  name: database-credentials
+                  key: user
+            - name: DatabasePassword
+              valueFrom:
+                secretKeyRef:
+                  name: database-credentials
+                  key: password
+            - name: JwtSecurityKey
+              valueFrom:
+                secretKeyRef:
+                  name: hub 
+                  key: JwtSecurityKey
+            - name: JwtIssuer 
+              value: hub.paul-steele.com
+            - name: JwtAudience
+              value: hub.paul-steele.com
+            - name: JwtExpiryHours
+              value: 1
+      imagePullSecrets:
+        - name: registry.paul-steele.com
