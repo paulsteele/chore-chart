@@ -6,6 +6,11 @@ namespace hub.Server.Configuration {
 		string JwtIssuer { get; }
 		string JwtAudience { get; }
 		int JwtExpiryHours { get; }
+		string DatabaseUrl { get; }
+		string DatabasePort { get; }
+		string DatabaseUser { get; }
+		string DatabasePassword { get; }
+		string DatabaseName { get; }
 	}
 
 	public class EnvironmentVariableConfiguration : IEnvironmentVariableConfiguration {
@@ -16,22 +21,23 @@ namespace hub.Server.Configuration {
 			JwtIssuer = GetVar(nameof(JwtIssuer), "http://localhost", ConvertString);
 			JwtAudience = GetVar(nameof(JwtAudience), "http://localhost", ConvertString);
 			JwtExpiryHours = GetVar(nameof(JwtExpiryHours), 1, ConvertInt);
+			DatabaseUrl = GetVar(nameof(DatabaseUrl), "localhost", ConvertString);
+			DatabasePort = GetVar(nameof(DatabasePort), "3306", ConvertString);
+			DatabaseUser = GetVar(nameof(DatabaseUser), "root", ConvertString);
+			DatabasePassword = GetVar(nameof(DatabasePassword), "pass", ConvertString);
+			DatabaseName = GetVar(nameof(DatabaseName), "hub", ConvertString);
 		}
 
-		private T GetVar<T>(string name, T defaultValue, Func<string, T> converter) {
+		private static T GetVar<T>(string name, T defaultValue, Func<string, T> converter) {
 			var envVar = Environment.GetEnvironmentVariable(name);
-			if (envVar != null) {
-				return converter(envVar);
-			}
-
-			return defaultValue;
+			return envVar != null ? converter(envVar) : defaultValue;
 		}
 
-		private string ConvertString(string s) {
+		private static string ConvertString(string s) {
 			return s;
 		}
 
-		private int ConvertInt(string s) {
+		private static int ConvertInt(string s) {
 			return int.Parse(s);
 		}
 
@@ -39,5 +45,11 @@ namespace hub.Server.Configuration {
 		public string JwtIssuer { get; }
 		public string JwtAudience { get; }
 		public int JwtExpiryHours { get; }
+		
+		public string DatabaseUrl { get; }
+		public string DatabasePort { get; }
+		public string DatabaseUser { get; }
+		public string DatabasePassword { get; }
+		public string DatabaseName { get; }
 	}
 }
