@@ -32,7 +32,7 @@ spec:
     - name: hub
       protocol: TCP
       port: 80
-      targetPort: 5000
+      targetPort: 80
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,13 +56,13 @@ spec:
           image: registry.paul-steele.com/hub:$BUILD_TAG
           ports:
             - name: hub
-              containerPort: 5000
+              containerPort: 80
           imagePullPolicy: Always
           env:
             - name: DatabaseUrl
               value: 192.168.0.101
             - name: DatabasePort
-              value: 3307
+              value: "3307"
             - name: DatabaseName
               value: hub
             - name: DatabaseUser
@@ -85,6 +85,6 @@ spec:
             - name: JwtAudience
               value: hub.paul-steele.com
             - name: JwtExpiryHours
-              value: 1
+              value: "1"
       imagePullSecrets:
         - name: registry.paul-steele.com
