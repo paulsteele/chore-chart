@@ -1,0 +1,14 @@
+﻿<div class="btn-group" role="group">
+    @for (var i = 0; i < Tabs.Length; i++)
+    {
+        <input type="radio" class="btn-check" name="btnradio" id=@($"btn{Tabs[i].name}") autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for=@($"btn{Tabs[i].name}")>@Tabs[i].name</label>
+    }
+</div>
+
+@code {
+    public RenderFragment SelectedContent { get; private set; }
+    
+    [Parameter]
+    public (string name, RenderFragment content)[] Tabs { get; set; }
+}

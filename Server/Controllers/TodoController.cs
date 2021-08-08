@@ -33,7 +33,7 @@ namespace hub.Server.Controllers
 	    }
 	    
 	    [HttpPut]
-	    public async Task<IActionResult> AddTodo(Todo todo)
+	    public async Task<IActionResult> UpdateTodo(Todo todo)
 	    {
 		    var user = await _userManager.GetUserAsync(HttpContext.User);
 		    

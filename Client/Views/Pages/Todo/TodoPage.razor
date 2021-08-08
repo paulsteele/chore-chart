@@ -2,8 +2,12 @@
 @using hub.Client.ViewModels.Todo
 @inject ITodoViewModel TodoViewModel
 
-<h3>Todo</h3>
-
-@code {
-    
+@{
+	var tabs = new (string, RenderFragment)[]
+	{
+		("Today", null),
+		("Edit", null)
+	};
 }
+
+<TabbedContent Tabs="@tabs" />

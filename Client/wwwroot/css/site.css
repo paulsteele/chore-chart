@@ -11,8 +11,8 @@ a, .btn-link {
 
 .btn-primary {
 	color: #fff;
-	background-color: #1b6ec2;
-	border-color: #1861ac;
+	background-color: #282F72;
+	border-color: #282F72;
 }
 
 app {
@@ -47,7 +47,11 @@ app {
 }
 
 .navbar {
-	background-color: #282F72
+	background-color: #282F72;
+}
+
+.navbar-content {
+	z-index: 1000;
 }
 
 .main {
@@ -151,7 +155,7 @@ app {
 		padding-right: 1rem;
 		padding-left: 1rem;
 		overflow-y: auto;
-		background-color: var(--gray-dark);
+		background-color: var(--bs-gray-dark);
 		transition: -webkit-transform .3s ease-in-out;
 		transition: transform .3s ease-in-out;
 		transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
