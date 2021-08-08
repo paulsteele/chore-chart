@@ -1,14 +1,26 @@
-﻿<div class="btn-group" role="group">
-    @for (var i = 0; i < Tabs.Length; i++)
-    {
-        <input type="radio" class="btn-check" name="btnradio" id=@($"btn{Tabs[i].name}") autocomplete="off" checked>
-        <label class="btn btn-outline-primary" for=@($"btn{Tabs[i].name}")>@Tabs[i].name</label>
-    }
+﻿<div class="text-center pt-4">
+    <div class="btn-group" role="group">
+        @for (var i = 0; i < Tabs.Length; i++)
+        {
+            <input type="radio" class="btn-check" name="btnradio" id=@($"btn{Tabs[i].name}") autocomplete="off" checked=@(i==0)>
+            <label class="btn btn-outline-primary" for=@($"btn{Tabs[i].name}") @onclick="@(CreateTabNavigator(i))">@Tabs[i].name</label>
+        }
+    </div>
 </div>
 
+@SelectedContent
+
 @code {
-    public RenderFragment SelectedContent { get; private set; }
+    private RenderFragment SelectedContent { get; set; }
     
     [Parameter]
     public (string name, RenderFragment content)[] Tabs { get; set; }
+
+    private Action CreateTabNavigator(int item)
+    {
+        return () =>
+        {
+            SelectedContent = Tabs[item].content;
+        };
+    }
 }
