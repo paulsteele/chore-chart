@@ -25,8 +25,5 @@
     <_ContentIncludedByDefault Remove="Views\Scale\ScaleSetup.razor" />
     <_ContentIncludedByDefault Remove="Views\Account\Login.razor" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services" />
-  </ItemGroup>
 
 </Project>

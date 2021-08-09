@@ -1,0 +1,35 @@
+﻿@using hub.Shared.Models.Todo
+
+<div class="card">
+    <div class="card-content" @onfocusout="@OnFocusOut">
+        <input type="text" placeholder="Enter Title." @bind="@Title">
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Todo Item { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnSaved { get; set; }
+
+    private string Title
+    {
+        get => Item.Title;
+        set
+        {
+            _edited = true;
+            Item.Title = value;
+        }
+    }
+    
+    private bool _edited = false;
+
+    private void OnFocusOut()
+    {
+        if (_edited)
+        {
+            OnSaved?.Invoke();
+        }
+    }
+}

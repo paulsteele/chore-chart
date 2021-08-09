@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using hub.Client.Authentication;
+using hub.Client.Services.Web;
 using hub.Shared.Bases;
 using hub.Shared.Models.Bluetooth;
 
@@ -19,18 +20,17 @@ namespace hub.Client.ViewModels.Scale {
 	}
 
 	public class ScaleSetupViewModel : BaseNotifyPropertyChanged, IScaleSetupViewModel  {
-			private HttpClient _httpClient;
-			private IAuthService _authService;
+			private AuthedHttpClient _httpClient;
 
-			public ScaleSetupViewModel(HttpClient httpClient, IAuthService authService) {
+			public ScaleSetupViewModel(AuthedHttpClient httpClient) {
 				_httpClient = httpClient;
-				_authService = authService;
 			}
 
 			public List<BluetoothDevice> FoundDevices { get; set; }
 
-			public async Task ScanForDevices() {
-				_httpClient.DefaultRequestHeaders.Authorization = await _authService.GetAuthHeader();
+			public async Task ScanForDevices()
+			{
+				await _httpClient.Init();
 				Scanning = true;
 				Task<HttpResponseMessage> task = _httpClient.PutAsJsonAsync<object>("scale", this);
 				for (ScanningProgress = 0; ScanningProgress < ScanningMax; ScanningProgress++) {

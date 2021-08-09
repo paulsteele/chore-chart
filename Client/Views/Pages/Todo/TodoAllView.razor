@@ -1,1 +1,8 @@
-﻿<h3>TodoAllView</h3>
+﻿@using hub.Shared.Models.Todo
+@using Microsoft.Extensions.Logging
+@using hub.Client.ViewModels.Todo
+@inject ILogger<TodoAllView> Logger
+@inject ITodoAllViewModel ViewModel
+
+<TodoEntry Item="@ViewModel.PendingTodo" OnSaved="@ViewModel.OnSave"/>
+
