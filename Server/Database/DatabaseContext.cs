@@ -14,7 +14,7 @@ namespace hub.Server.Database {
 			_configuration = configuration;
 		}
 		
-		public DbSet<Todo> Todos { get; set; }
+		public DbSet<TodoModel> Todos { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 			optionsBuilder.UseMySQL($"Server={_configuration.DatabaseUrl};Port={_configuration.DatabasePort};Database={_configuration.DatabaseName};Uid={_configuration.DatabaseUser};Pwd={_configuration.DatabasePassword};");

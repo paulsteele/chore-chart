@@ -1,6 +1,5 @@
 @using Microsoft.Extensions.Logging
 @using hub.Client.ViewModels.Scale
-@using System.ComponentModel
 @implements IDisposable
 @inject ILogger<Index> _logger
 @inject IScaleSetupViewModel _scaleSetupViewModel
@@ -40,7 +39,7 @@ else {
 @code {
 	protected override void OnInitialized() {
 		base.OnInitialized();
-		_scaleSetupViewModel.PropertyChanged += ScaleSetupViewModelOnPropertyChanged;
+		_scaleSetupViewModel.StateChanged += StateHasChanged;
 	}
 
 	private async Task StartScanning() {
@@ -48,11 +47,7 @@ else {
 		await _scaleSetupViewModel.ScanForDevices();
 	}
 
-	private void ScaleSetupViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e) {
-		StateHasChanged();
-	}
-
 	public void Dispose() {
-		_scaleSetupViewModel.PropertyChanged -= ScaleSetupViewModelOnPropertyChanged;
+		_scaleSetupViewModel.StateChanged -= StateHasChanged;
 	}
 }

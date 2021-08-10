@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace hub.Shared.Models.Todo
 {
-    public class Todo
+    public class TodoModel
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

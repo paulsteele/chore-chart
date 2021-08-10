@@ -4,19 +4,19 @@ using hub.Shared.Bases;
 using hub.Shared.Models.Bluetooth;
 
 namespace hub.Client.ViewModels.Scale {
-	public interface IScaleViewModel : INotifyPropertyChanged
+	public interface IScaleViewModel : INotifyStateChanged
 	{
 		string ConnectedDeviceName { get; }
 		string ConnectedDeviceId { get; }
 		string CircleClass { get; }
 	}
 
-	public class ScaleViewModel : BaseNotifyPropertyChanged, IScaleViewModel {
+	public class ScaleViewModel : BaseNotifyStateChanged, IScaleViewModel {
 
 		private BluetoothStatus _bluetoothStatus;
 		public BluetoothStatus BluetoothStatus {
 			get => _bluetoothStatus;
-			set => SetValue(ref _bluetoothStatus, value);
+			set => SetAndNotify(ref _bluetoothStatus, value);
 		}
 
 		public string ConnectedDeviceName => BluetoothStatus?.ConnectedDevice?.Name ?? "Unknown Name";

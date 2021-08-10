@@ -1,0 +1,12 @@
+﻿@using hub.Shared.Models.Todo
+
+<div class="card">
+    <div class="card-content">
+        <p>@Item.Title</p> 
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TodoModel Item { get; set; }
+}

@@ -7,11 +7,20 @@
 </div>
 
 @code {
+    private TodoModel _item;
+
     [Parameter]
-    public Todo Item { get; set; }
+    public TodoModel Item
+    {
+        get => _item;
+        set { 
+            _edited = false;
+            _item = value;
+        }
+    }
     
     [Parameter]
-    public Func<Task> OnSaved { get; set; }
+    public Func<Task> SaveCommand { get; set; }
 
     private string Title
     {
@@ -29,7 +38,7 @@
     {
         if (_edited)
         {
-            OnSaved?.Invoke();
+            SaveCommand?.Invoke();
         }
     }
 }

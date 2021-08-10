@@ -33,28 +33,28 @@ namespace hub.Server.Controllers
 	    }
 	    
 	    [HttpPut]
-	    public async Task<IActionResult> UpdateTodo(Todo todo)
+	    public async Task<IActionResult> UpdateTodo(TodoModel todoModel)
 	    {
 		    var user = await _userManager.GetUserAsync(HttpContext.User);
 		    
 		    // sanitization
-		    todo.User = user;
+		    todoModel.User = user;
 
-		    var savedTodo = _db.DatabaseContext.Todos.Update(todo);
+		    var savedTodo = _db.DatabaseContext.Todos.Update(todoModel);
 
 		    await _db.DatabaseContext.SaveChangesAsync();
 		    return Ok(savedTodo.Entity);
 	    }
 	    
 	    [HttpDelete]
-	    public async Task<IActionResult> DeleteTodo(Todo todo)
+	    public async Task<IActionResult> DeleteTodo(TodoModel todoModel)
 	    {
 		    var user = await _userManager.GetUserAsync(HttpContext.User);
 		    
 		    // sanitization
-		    todo.User = user;
+		    todoModel.User = user;
 
-		    _db.DatabaseContext.Todos.Remove(todo);
+		    _db.DatabaseContext.Todos.Remove(todoModel);
 
 		    await _db.DatabaseContext.SaveChangesAsync();
 		    return Ok();

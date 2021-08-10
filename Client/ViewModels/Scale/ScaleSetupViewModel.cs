@@ -10,7 +10,7 @@ using hub.Shared.Bases;
 using hub.Shared.Models.Bluetooth;
 
 namespace hub.Client.ViewModels.Scale {
-	public interface IScaleSetupViewModel : INotifyPropertyChanged {
+	public interface IScaleSetupViewModel : INotifyStateChanged {
 		List<BluetoothDevice> FoundDevices { get; set; }
 		Task ScanForDevices();
 		bool Scanning { get; set; }
@@ -19,7 +19,7 @@ namespace hub.Client.ViewModels.Scale {
 		int ScanningMax { get; set; }
 	}
 
-	public class ScaleSetupViewModel : BaseNotifyPropertyChanged, IScaleSetupViewModel  {
+	public class ScaleSetupViewModel : BaseNotifyStateChanged, IScaleSetupViewModel  {
 			private AuthedHttpClient _httpClient;
 
 			public ScaleSetupViewModel(AuthedHttpClient httpClient) {
@@ -54,21 +54,21 @@ namespace hub.Client.ViewModels.Scale {
 
 			public bool Scanning {
 				get => _scanning;
-				set => SetValue(ref _scanning, value);
+				set => SetAndNotify(ref _scanning, value);
 			}
 
 			private int _scanningProgress;
 
 			public int ScanningProgress {
 				get => _scanningProgress;
-				set => SetValue(ref _scanningProgress, value);
+				set => SetAndNotify(ref _scanningProgress, value);
 			}
 
 			private int _scanningMax = 20;
 
 			public int ScanningMax {
 				get => _scanningMax;
-				set => SetValue(ref _scanningMax, value);
+				set => SetAndNotify(ref _scanningMax, value);
 			}
 
 			public string ScanningProgressWidthStyle => $"width : {_scanningProgress * 5}%;";
