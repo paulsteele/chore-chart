@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using hub.Server.Database;
 using hub.Shared.Models.Todo;
@@ -47,17 +48,22 @@ namespace hub.Server.Controllers
 	    }
 	    
 	    [HttpDelete]
-	    public async Task<IActionResult> DeleteTodo(TodoModel todoModel)
+	    [Route("{guid:Guid}")]
+	    public async Task<IActionResult> DeleteTodo(Guid guid)
 	    {
 		    var user = await _userManager.GetUserAsync(HttpContext.User);
 		    
 		    // sanitization
-		    todoModel.User = user;
+		    var model = await _db.DatabaseContext.Todos.FindAsync(guid);
+		    if (model == null || model.User != user)
+		    {
+			    return NotFound();
+		    }
+		    
+		    _db.DatabaseContext.Todos.Remove(model);
 
-		    _db.DatabaseContext.Todos.Remove(todoModel);
-
-		    await _db.DatabaseContext.SaveChangesAsync();
-		    return Ok();
+			await _db.DatabaseContext.SaveChangesAsync();
+			return Ok();
 	    }
     }
 }

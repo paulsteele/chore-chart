@@ -20,7 +20,7 @@ namespace hub.Server.Configuration {
 			JwtSecurityKey = GetVar(nameof(JwtSecurityKey), "default-signing-key", ConvertString);
 			JwtIssuer = GetVar(nameof(JwtIssuer), "http://localhost", ConvertString);
 			JwtAudience = GetVar(nameof(JwtAudience), "http://localhost", ConvertString);
-			JwtExpiryHours = GetVar(nameof(JwtExpiryHours), 1, ConvertInt);
+			JwtExpiryHours = GetVar(nameof(JwtExpiryHours), 10, ConvertInt);
 			DatabaseUrl = GetVar(nameof(DatabaseUrl), "localhost", ConvertString);
 			DatabasePort = GetVar(nameof(DatabasePort), "3306", ConvertString);
 			DatabaseUser = GetVar(nameof(DatabaseUser), "root", ConvertString);

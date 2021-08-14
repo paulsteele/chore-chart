@@ -15,6 +15,7 @@ namespace hub.Client.ViewModels.Todo
         List<TodoModel> Todos { get; }
 
         public Task Save();
+        public Task DeleteItem(TodoModel item);
     }
     
     public class TodoAllViewModel : BaseNotifyStateChanged, ITodoAllViewModel
@@ -55,6 +56,18 @@ namespace hub.Client.ViewModels.Todo
                 PendingTodoModel = new TodoModel();
                 var todo = await responseMessage.Content.ReadFromJsonAsync<TodoModel>();
                 Todos.Insert(0, todo);
+                NotifyStateChanged();
+            }
+        }
+
+        public async Task DeleteItem(TodoModel item)
+        {
+            await _httpClient.Init();
+            var responseMessage = await _httpClient.DeleteAsync($"todos/{item.Id}");
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                Todos.Remove(item);
                 NotifyStateChanged();
             }
         }
