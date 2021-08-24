@@ -12,7 +12,12 @@
 
 @foreach (var item in ViewModel.Todos)
 {
-	<TodoItem Item="@item" DeleteCommand="@ViewModel.DeleteItem"/>
+	<TodoItem 
+		Item="@item.TodoModel" 
+		Completion="@item.TodoCompletion" 
+		DeleteCommand="@ViewModel.DeleteItem"
+		SetCompletionCommand="@ViewModel.ToggleItem"
+	/>
 }
 
 @code {

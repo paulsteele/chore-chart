@@ -3,6 +3,7 @@ using hub.Shared.Models.Todo;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace hub.Server.Database {
 
@@ -15,6 +16,7 @@ namespace hub.Server.Database {
 		}
 		
 		public DbSet<TodoModel> Todos { get; set; }
+		public DbSet<TodoCompletion> TodosCompletions { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
 			optionsBuilder.UseMySQL($"Server={_configuration.DatabaseUrl};Port={_configuration.DatabasePort};Database={_configuration.DatabaseName};Uid={_configuration.DatabaseUser};Pwd={_configuration.DatabasePassword};");
@@ -47,6 +49,14 @@ namespace hub.Server.Database {
 			builder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
 			builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
 			builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
+		}
+	}
+	
+	public class MigrationContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
+	{
+		public DatabaseContext CreateDbContext(string[] args)
+		{
+			return new(new EnvironmentVariableConfiguration());
 		}
 	}
 }
