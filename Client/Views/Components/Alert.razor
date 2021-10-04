@@ -1,0 +1,21 @@
+﻿@using hub.Client.Services.Alerts
+@inject IAlertService _alertService
+
+@if (_alertService.CurrentTitle != null)
+{
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		<strong>@($"{_alertService.CurrentTitle} ")</strong>@_alertService.CurrentMessage
+		<button type="button" class="btn-close" @onclick=@_alertService.DismissAlert aria-label="Close"></button>
+	</div>
+}
+
+@code {
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		_alertService.StateChanged += StateHasChanged;
+	}
+
+	public void Dispose() {
+		_alertService.StateChanged -= StateHasChanged;
+	}
+}

@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Blazored.LocalStorage;
-using hub.Client.Authentication;
 using hub.Client.Logging;
+using hub.Client.Services.Alerts;
+using hub.Client.Services.Authentication;
 using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -41,6 +42,10 @@ namespace hub.Client
 			builder.RegisterType<AuthService>()
 				.As<IAuthService>()
 				.As<AuthenticationStateProvider>()
+				.SingleInstance();
+
+			builder.RegisterType<AlertService>()
+				.As<IAlertService>()
 				.SingleInstance();
 
 			CommonContainer.Register(builder);

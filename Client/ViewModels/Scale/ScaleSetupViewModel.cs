@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using hub.Client.Authentication;
 using hub.Client.Services.Web;
 using hub.Shared.Bases;
 using hub.Shared.Models.Bluetooth;

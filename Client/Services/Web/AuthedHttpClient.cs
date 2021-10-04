@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using hub.Client.Authentication;
+using hub.Client.Services.Authentication;
 using Microsoft.AspNetCore.Components;
 
 namespace hub.Client.Services.Web

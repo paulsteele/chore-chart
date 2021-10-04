@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using hub.Client.Authentication;
+using hub.Client.Services.Authentication;
 using hub.Shared.Models;
 
 namespace hub.Client.ViewModels.Account {

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,12 +8,12 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using hub.Client.Services.Alerts;
 using hub.Shared.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 
-namespace hub.Client.Authentication {
+namespace hub.Client.Services.Authentication {
 	public interface IAuthService {
 		Task<LoginResult> Login(LoginModel loginModel);
 		Task<AuthenticationHeaderValue> GetAuthHeader();
@@ -26,16 +24,19 @@ namespace hub.Client.Authentication {
 		private readonly HttpClient _httpClient;
 		private readonly ILogger _logger;
 		private readonly ILocalStorageService _localStorageService;
+		private readonly IAlertService _alertService;
 
 		public AuthService(
 			HttpClient httpClient,
 			ILogger logger,
-			ILocalStorageService localStorageService
+			ILocalStorageService localStorageService,
+			IAlertService alertService
 		)
 		{
 			_httpClient = httpClient;
 			_logger = logger;
 			_localStorageService = localStorageService;
+			_alertService = alertService;
 		}
 
 		public async Task<LoginResult> Login(LoginModel loginModel)
@@ -49,10 +50,14 @@ namespace hub.Client.Authentication {
 
 				var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, loginModel.Username) }, "apiauth"));
 				var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+				_alertService.DismissAlert();
 				NotifyAuthenticationStateChanged(authState);
 			}
+			else
+			{
+				_alertService.ShowAlert("Error.", "Login failed. Please check your credentials and try again.");
+			}
 
-			//_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", loginResult.Token);
 			return loginResult;
 		}
 

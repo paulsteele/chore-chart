@@ -1,20 +1,23 @@
-<nav class="navbar navbar-expand-lg navbar-dark px-4">
-	<a class="navbar-brand" href="/">hub</a>
-	<button class="navbar-toggler" type="button" @onclick="ToggleNavbar" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
+<div>
+	<nav class="navbar navbar-expand-lg navbar-dark px-4">
+		<a class="navbar-brand" href="/">hub</a>
+		<button class="navbar-toggler" type="button" @onclick="ToggleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 
-	<div class="@NavbarClassName">
-		<ul class="navbar-nav mr-auto">
-			@foreach ((string name, string route) in Items)
-			{
-				<li class="nav-item">
-					<a class="nav-link" @onclick="CloseNavbar" href="@route">@name</a>
-				</li>
-			}
-		</ul>
-	</div>
-</nav>
+		<div class="@NavbarClassName">
+			<ul class="navbar-nav mr-auto">
+				@foreach ((string name, string route) in Items)
+				{
+					<li class="nav-item">
+						<a class="nav-link" @onclick="CloseNavbar" href="@route">@name</a>
+					</li>
+				}
+			</ul>
+		</div>
+	</nav>
+	<Alert/>
+</div>
 
 @code {
 	[Parameter] public IList<(string, string)> Items { get; set; }

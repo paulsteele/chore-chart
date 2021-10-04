@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace hub.Shared.Bases {
 	public interface INotifyStateChanged
@@ -15,7 +14,7 @@ namespace hub.Shared.Bases {
 				StateChanged?.Invoke();
 			}
 			
-			protected void SetAndNotify<T>(ref T backingField, T value, [CallerMemberName] string propertyName = null)
+			protected void SetAndNotify<T>(ref T backingField, T value)
 			{
 				if (EqualityComparer<T>.Default.Equals(backingField, value)) return;
 				backingField = value;
