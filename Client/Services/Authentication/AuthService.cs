@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using hub.Client.Services.Alerts;
 using hub.Shared.Models;
+using hub.Shared.Tools;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 
@@ -25,18 +26,21 @@ namespace hub.Client.Services.Authentication {
 		private readonly ILogger _logger;
 		private readonly ILocalStorageService _localStorageService;
 		private readonly IAlertService _alertService;
+		private readonly INowTimeProvider _nowTimeProvider;
 
 		public AuthService(
 			HttpClient httpClient,
 			ILogger logger,
 			ILocalStorageService localStorageService,
-			IAlertService alertService
+			IAlertService alertService,
+			INowTimeProvider nowTimeProvider
 		)
 		{
 			_httpClient = httpClient;
 			_logger = logger;
 			_localStorageService = localStorageService;
 			_alertService = alertService;
+			_nowTimeProvider = nowTimeProvider;
 		}
 
 		public async Task<LoginResult> Login(LoginModel loginModel)
@@ -61,7 +65,7 @@ namespace hub.Client.Services.Authentication {
 			return loginResult;
 		}
 
-		private IEnumerable<Claim> ParseClaimsFromJwt(string jwt) {
+		private ClaimsIdentity ParseClaimIdentityFromJwt(string jwt) {
 			var claims = new List<Claim>();
 			var payload = jwt.Split('.')[1];
 			var jsonBytes = ParseBase64WithoutPadding(payload);
@@ -70,10 +74,11 @@ namespace hub.Client.Services.Authentication {
 			keyValuePairs.TryGetValue(ClaimTypes.Role, out var roles);
 
 			if (roles != null) {
-				if (roles.ToString().Trim().StartsWith("[")) {
+				if (roles.ToString().Trim().StartsWith("["))
+				{
 					var parsedRoles = JsonSerializer.Deserialize<string[]>(roles.ToString());
 
-					foreach (var parsedRole in parsedRoles) claims.Add(new Claim(ClaimTypes.Role, parsedRole));
+					claims.AddRange(parsedRoles.Select(parsedRole => new Claim(ClaimTypes.Role, parsedRole)));
 				}
 				else {
 					claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
@@ -84,7 +89,21 @@ namespace hub.Client.Services.Authentication {
 
 			claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
 
-			return claims;
+			keyValuePairs.TryGetValue("exp", out var expiration);
+
+			var identity = new ClaimsIdentity(claims);
+
+			if (expiration == null) return identity;
+			if (!long.TryParse(expiration.ToString(), out var utcExpiration)) return identity;
+
+			var expirationDate = DateTimeOffset.FromUnixTimeSeconds(utcExpiration).UtcDateTime;
+			
+			if (expirationDate > _nowTimeProvider.Now)
+			{
+				identity = new ClaimsIdentity(claims, "jwt");
+			}
+
+			return identity;
 		}
 
 		private byte[] ParseBase64WithoutPadding(string base64) {
@@ -114,7 +133,7 @@ namespace hub.Client.Services.Authentication {
 
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync() {
 			var savedToken = await _localStorageService.GetItemAsync<string>("authToken");
-			var claimsIdentity = !string.IsNullOrWhiteSpace(savedToken) ? new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt") : new ClaimsIdentity();
+			var claimsIdentity = !string.IsNullOrWhiteSpace(savedToken) ? ParseClaimIdentityFromJwt(savedToken) : new ClaimsIdentity();
 			return new AuthenticationState(new ClaimsPrincipal(claimsIdentity));
 		}
 	}
