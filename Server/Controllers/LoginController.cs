@@ -45,7 +45,7 @@ namespace hub.Server.Controllers {
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.JwtSecurityKey));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-			var expiry = DateTime.Now.AddMinutes(_configuration.JwtExpiryHours);
+			var expiry = DateTime.Now.AddHours(_configuration.JwtExpiryHours);
 
 			var token = new JwtSecurityToken(
 				_configuration.JwtIssuer,

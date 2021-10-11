@@ -85,6 +85,6 @@ spec:
             - name: JwtAudience
               value: hub.paul-steele.com
             - name: JwtExpiryHours
-              value: "1"
+              value: "12"
       imagePullSecrets:
         - name: registry.paul-steele.com
