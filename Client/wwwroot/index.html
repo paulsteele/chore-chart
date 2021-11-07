@@ -31,6 +31,16 @@
 	</div>
 	<script src="_framework/blazor.webassembly.js"></script>
 	<script>navigator.serviceWorker.register('service-worker.js');</script>
+	<script>
+		function playAudio(element) {
+			stopAudio(element);
+			element.play();
+		}
+		function stopAudio(element) {
+			element.pause();
+			element.currentTime = 0;
+		}
+	</script>
 </body>
 
 </html>

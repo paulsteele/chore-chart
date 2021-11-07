@@ -1,0 +1,24 @@
+@using hub.Client.Views.Components.Layouts
+@inherits LayoutComponentBase
+
+@attribute [AllowAnonymous]
+@inject IJSRuntime _jsRuntime
+
+@layout NoHeaderLayout
+@page "/countdown"
+
+<div class="main">
+    <audio @ref="Audio" autoplay loop>
+        <source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
+    </audio>
+    <Button @onclick="Play">Play</Button>
+</div>
+
+@code {
+    private ElementReference Audio { get; set; }
+
+    private async Task Play()
+    {
+        await _jsRuntime.InvokeVoidAsync("playAudio", Audio);
+    }
+}
