@@ -1,24 +1,32 @@
 @using hub.Client.Views.Components.Layouts
+@using hub.Client.ViewModels.Countdown
 @inherits LayoutComponentBase
 
 @attribute [AllowAnonymous]
-@inject IJSRuntime _jsRuntime
+@inject ICountdownViewModel _countdownViewModel
+@implements IDisposable
 
 @layout NoHeaderLayout
 @page "/countdown"
 
 <div class="main">
-    <audio @ref="Audio" autoplay loop>
-        <source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
-    </audio>
-    <Button @onclick="Play">Play</Button>
+	<audio @ref="_countdownViewModel.Audio" loop>
+		<source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
+	</audio>
+	<button type="button" @onclick="_countdownViewModel.ToggleAudio" aria-expanded="false" aria-label="Play Audio">
+		<span class="@_countdownViewModel.Icon"></span>
+	</button>
+	<img src="assets/countdown/christmas-tree.svg" alt="Christmas Tree"/>
 </div>
 
 @code {
-    private ElementReference Audio { get; set; }
+	protected override void OnInitialized() {
+		base.OnInitialized();
+		_countdownViewModel.StateChanged += StateHasChanged;
+	}
 
-    private async Task Play()
-    {
-        await _jsRuntime.InvokeVoidAsync("playAudio", Audio);
-    }
+	public void Dispose()
+	{
+		_countdownViewModel.StateChanged -= StateHasChanged;
+	}
 }

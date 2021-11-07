@@ -33,12 +33,10 @@
 	<script>navigator.serviceWorker.register('service-worker.js');</script>
 	<script>
 		function playAudio(element) {
-			stopAudio(element);
 			element.play();
 		}
-		function stopAudio(element) {
+		function pauseAudio(element) {
 			element.pause();
-			element.currentTime = 0;
 		}
 	</script>
 </body>
