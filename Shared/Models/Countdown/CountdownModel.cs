@@ -1,18 +1,19 @@
 using System;
+using System.Linq;
 using hub.Shared.Tools;
 
 namespace hub.Shared.Models.Countdown
 {
     public enum DisplayType
     {
-        FortNight = 1,
-        Weeks = 2,
-        Days = 3,
-        Hours = 4,
-        Minutes = 5,
-        Seconds = 6,
-        Milliseconds = 7,
-        Nanoseconds = 8
+        FortNight = 0,
+        Weeks = 1,
+        Days = 2,
+        Hours = 3,
+        Minutes = 4,
+        Seconds = 5,
+        Milliseconds = 6,
+        Nanoseconds = 7
     }
     public class CountdownModel
     {
@@ -31,8 +32,21 @@ namespace hub.Shared.Models.Countdown
         public DisplayType DisplayType { get; set; }
         public string Image { get; }
         public string ImageCredits { get; }
-        public string Name { get; }
+        private string Name { get; }
         private DateTime DateTime { get; }
+
+        public void CycleDisplayType(int diff)
+        {
+            var max = (int) Enum.GetValues(typeof(DisplayType)).Cast<DisplayType>().Max();
+
+            var newValue = (int) DisplayType + diff;
+            if (newValue < 0)
+            {
+                newValue = max;
+            }
+
+            DisplayType = (DisplayType) (newValue % (max + 1));
+        }
 
         public string TimeLeft
         {
@@ -47,7 +61,7 @@ namespace hub.Shared.Models.Countdown
                 
                 var time =  DisplayType switch
                 {
-                    DisplayType.FortNight => $"{timeLeft.TotalDays / 14d:0}fortnights",
+                    DisplayType.FortNight => $"{timeLeft.TotalDays / 14d:0} fortnights",
                     DisplayType.Weeks => $"{timeLeft.TotalDays / 7d:0} weeks",
                     DisplayType.Days => $"{timeLeft.TotalDays:0} days",
                     DisplayType.Hours => $"{timeLeft.TotalHours:0} hours.",

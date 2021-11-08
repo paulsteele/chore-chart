@@ -16,6 +16,8 @@ namespace hub.Client.ViewModels.Countdown
         string Icon { get; }
         CountdownModel CurrentModel { get; }
         void StartTimer();
+        void GoToNextDisplay();
+        void GoToPreviousDisplay();
     }
 
     public class CountdownViewModel : BaseNotifyStateChanged, ICountdownViewModel
@@ -29,9 +31,17 @@ namespace hub.Client.ViewModels.Countdown
             _jsRuntime = jsRuntime;
             _isPlaying = false;
 
+            var christmas = new DateTime(nowTimeProvider.Now.Year, 12, 25, 00, 0, 0);
+            var thisYearsAfterChristmas = new DateTime(nowTimeProvider.Now.Year, 12, 26, 00, 0, 0);
+
+            if (nowTimeProvider.Now > thisYearsAfterChristmas)
+            {
+                christmas = christmas.AddYears(1);
+            }
+
             var model = new CountdownModel(
                 "Christmas",
-                nowTimeProvider.Now.Add(new TimeSpan(1, 0, 0)), 
+                christmas, 
                 "assets/countdown/christmas-tree.svg", 
                 "https://www.cutthatdesign.com/free-svg-christmas-tree-with-lights-design/",
                 nowTimeProvider
@@ -46,7 +56,27 @@ namespace hub.Client.ViewModels.Countdown
             _timer.AutoReset = true;
             _timer.Enabled = true;
         }
-        
+
+        private void ChangeDisplay(int diff)
+        {
+            CurrentModel.CycleDisplayType(diff);
+            _timer.Stop();
+            _timer.Interval = TimerDelay;
+            _timer.Start();
+            
+            NotifyStateChanged();
+        }
+
+        public void GoToNextDisplay()
+        {
+           ChangeDisplay(1); 
+        }
+
+        public void GoToPreviousDisplay()
+        {
+            ChangeDisplay(-1);
+        }
+
         public CountdownModel CurrentModel { get; }
         public ElementReference Audio { get; set; }
 
