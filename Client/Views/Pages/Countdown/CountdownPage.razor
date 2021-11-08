@@ -8,15 +8,27 @@
 
 @layout NoHeaderLayout
 @page "/countdown"
-
-<div class="main">
-	<audio @ref="_countdownViewModel.Audio" loop>
-		<source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
-	</audio>
-	<button type="button" @onclick="_countdownViewModel.ToggleAudio" aria-expanded="false" aria-label="Play Audio">
-		<span class="@_countdownViewModel.Icon"></span>
-	</button>
-	<img src="assets/countdown/christmas-tree.svg" alt="Christmas Tree"/>
+<div class="main p-0 position-absolute top-0 start-0" style="height: 100vh; width: 100vw; background: url('assets/countdown/background.jpg') no-repeat; background-size: 100% 100%;">
+	<div class="d-flex mx-auto w-75 p-3" style="margin-top: 20vh; background-color: #ffffff52; border-radius: 5px">
+		<div class="flex-shrink-0 align-items-center flex-column" style="max-width: 30vw">
+			<p>HOW MUCH TIME WHAT</p>
+		</div>
+		<div class="flex-grow-1">
+			<img class="w-100" src="assets/countdown/christmas-tree.svg" alt="Christmas Tree" style="max-height: 30vw"/>
+			<audio @ref="_countdownViewModel.Audio" loop>
+				<source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
+			</audio>
+			<button class="bg-transparent border-0 w-100" type="button" @onclick="_countdownViewModel.ToggleAudio" aria-expanded="false" aria-label="Play Audio">
+				<span class="@_countdownViewModel.Icon fs-1"></span>
+			</button>
+		</div>
+	</div>
+	<div class="position-absolute bottom-0 start-50 translate-middle-x w-100 text-center">
+		<p class="m-0" style="font-size: 8px">All assets belong to their respective owners and are used in accordance with their licenses.</p>
+		<a style="font-size: 8px" href="https://soundcloud.com/e-soundtrax/christmas-silent-night-royalty">Audio</a>
+		<a style="font-size: 8px" href="https://www.cutthatdesign.com/free-svg-christmas-tree-with-lights-design/">Image</a>
+		<a style="font-size: 8px" href="https://wallpaperaccess.com/simple-winter">Background</a>
+	</div>
 </div>
 
 @code {
