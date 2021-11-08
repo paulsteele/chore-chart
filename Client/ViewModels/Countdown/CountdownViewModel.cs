@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Timers;
 using hub.Shared.Bases;
@@ -18,6 +19,8 @@ namespace hub.Client.ViewModels.Countdown
         void StartTimer();
         void GoToNextDisplay();
         void GoToPreviousDisplay();
+        void SelectChristmas();
+        void SelectEndwalker();
     }
 
     public class CountdownViewModel : BaseNotifyStateChanged, ICountdownViewModel
@@ -25,6 +28,9 @@ namespace hub.Client.ViewModels.Countdown
         private readonly IJSRuntime _jsRuntime;
         private bool _isPlaying;
         private Timer _timer;
+
+        private CountdownModel _christmasCountdown;
+        private CountdownModel _endwalkerCountdown;
 
         public CountdownViewModel(IJSRuntime jsRuntime, INowTimeProvider nowTimeProvider)
         {
@@ -39,14 +45,26 @@ namespace hub.Client.ViewModels.Countdown
                 christmas = christmas.AddYears(1);
             }
 
-            var model = new CountdownModel(
+            _christmasCountdown = new CountdownModel(
                 "Christmas",
                 christmas, 
                 "assets/countdown/christmas-tree.svg", 
                 "https://www.cutthatdesign.com/free-svg-christmas-tree-with-lights-design/",
+                "assets/countdown/silent-night.mp4",
+                "https://soundcloud.com/e-soundtrax/christmas-silent-night-royalty",
                 nowTimeProvider
             );
-            CurrentModel = model;
+            
+            _endwalkerCountdown = new CountdownModel(
+                "Endwalker Early Access",
+                new DateTime(2021, 12, 3, 4, 0, 0, 0), 
+                "assets/countdown/endwalker.png", 
+                "https://www.pngaaa.com/detail/6225449",
+                "assets/countdown/endwalker.mp3",
+                "https://www.youtube.com/watch?v=khPMuue_7oo",
+                nowTimeProvider
+            );
+            CurrentModel = _christmasCountdown;
         }
 
         public void StartTimer()
@@ -59,7 +77,8 @@ namespace hub.Client.ViewModels.Countdown
 
         private void ChangeDisplay(int diff)
         {
-            CurrentModel.CycleDisplayType(diff);
+            _christmasCountdown.CycleDisplayType(diff);
+            _endwalkerCountdown.CycleDisplayType(diff);
             _timer.Stop();
             _timer.Interval = TimerDelay;
             _timer.Start();
@@ -77,7 +96,38 @@ namespace hub.Client.ViewModels.Countdown
             ChangeDisplay(-1);
         }
 
-        public CountdownModel CurrentModel { get; }
+        private async Task SelectCountdown(CountdownModel model)
+        {
+            if (CurrentModel == model) return;
+            CurrentModel = model;
+
+            NotifyStateChanged();
+            
+            if (_isPlaying)
+            {
+                await _jsRuntime.InvokeVoidAsync("pauseAudio", Audio);
+            }
+
+            await _jsRuntime.InvokeVoidAsync("loadAudio", Audio);
+
+            if (_isPlaying)
+            {
+                await _jsRuntime.InvokeVoidAsync("playAudio", Audio);
+            }
+
+        }
+        
+        public void SelectChristmas()
+        {
+            SelectCountdown(_christmasCountdown).ConfigureAwait(false);
+        }
+
+        public void SelectEndwalker()
+        {
+            SelectCountdown(_endwalkerCountdown).ConfigureAwait(false);
+        }
+
+        public CountdownModel CurrentModel { get; private set; }
         public ElementReference Audio { get; set; }
 
         public async Task ToggleAudio()

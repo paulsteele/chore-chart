@@ -9,6 +9,14 @@
 @layout NoHeaderLayout
 @page "/countdown"
 <div class="main p-0 position-absolute top-0 start-0" style="height: 100vh; width: 100vw; background: url('assets/countdown/background.jpg') no-repeat; background-size: 100% 100%;">
+	<div class="text-center pt-4">
+		<div class="btn-group" role="group">
+			 <input type="radio" class="btn-check" name="btnradio" id="btnChristmas" autocomplete="off" checked>
+			 <label class="btn btn-primary" for="btnChristmas" @onclick="@_countdownViewModel.SelectChristmas">Christmas</label>
+			 <input type="radio" class="btn-check" name="btnradio" id="btnEndwalker" autocomplete="off" >
+			 <label class="btn btn-primary" for="btnEndwalker" @onclick="@_countdownViewModel.SelectEndwalker">Endwalker</label>
+		</div>
+	</div>
 	<div class="d-flex mx-auto w-75 p-3" style="margin-top: 20vh; background-color: #ffffff52; border-radius: 5px">
 		<div class="flex-shrink-0 align-items-center flex-column" style="max-width: 30vw">
 			<p class="fs-2 text-center">@_countdownViewModel.CurrentModel.TimeLeft</p>
@@ -24,7 +32,7 @@
 		<div class="flex-grow-1">
 			<img class="w-100" src="@_countdownViewModel.CurrentModel.Image" alt="Christmas Tree" style="max-height: 30vw"/>
 			<audio @ref="_countdownViewModel.Audio" loop>
-				<source src="assets/countdown/silent-night.mp4" type="audio/mpeg">
+				<source src="@_countdownViewModel.CurrentModel.Audio" type="audio/mpeg">
 			</audio>
 			<button class="bg-transparent border-0 w-100" type="button" @onclick="_countdownViewModel.ToggleAudio" aria-expanded="false" aria-label="Play Audio">
 				<span class="@_countdownViewModel.Icon fs-1"></span>
@@ -33,7 +41,7 @@
 	</div>
 	<div class="position-absolute bottom-0 start-50 translate-middle-x w-100 text-center">
 		<p class="m-0" style="font-size: 8px">All assets belong to their respective owners and are used in accordance with their licenses.</p>
-		<a style="font-size: 8px" href="https://soundcloud.com/e-soundtrax/christmas-silent-night-royalty">Audio</a>
+		<a style="font-size: 8px" href="@_countdownViewModel.CurrentModel.AudioCredits">Audio</a>
 		<a style="font-size: 8px" href="@_countdownViewModel.CurrentModel.ImageCredits">Image</a>
 		<a style="font-size: 8px" href="https://wallpaperaccess.com/simple-winter">Background</a>
 	</div>

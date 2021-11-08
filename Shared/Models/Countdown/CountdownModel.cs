@@ -19,19 +19,30 @@ namespace hub.Shared.Models.Countdown
     {
         private readonly INowTimeProvider _nowTimeProvider;
 
-        public CountdownModel(string name, DateTime dateTime, string image, string imageCredits, INowTimeProvider nowTimeProvider)
+        public CountdownModel(
+            string name, 
+            DateTime dateTime,
+            string image, 
+            string imageCredits,
+            string audio,
+            string audioCredits,
+            INowTimeProvider nowTimeProvider)
         {
             _nowTimeProvider = nowTimeProvider;
             Name = name;
             DateTime = dateTime;
             ImageCredits = imageCredits;
+            Audio = audio;
+            AudioCredits = audioCredits;
             Image = image;
-            DisplayType = DisplayType.Seconds;
+            DisplayType = DisplayType.Days;
         }
 
         public DisplayType DisplayType { get; set; }
         public string Image { get; }
         public string ImageCredits { get; }
+        public string Audio { get; }
+        public string AudioCredits { get; }
         private string Name { get; }
         private DateTime DateTime { get; }
 
@@ -64,7 +75,7 @@ namespace hub.Shared.Models.Countdown
                     DisplayType.FortNight => $"{timeLeft.TotalDays / 14d:0} fortnights",
                     DisplayType.Weeks => $"{timeLeft.TotalDays / 7d:0} weeks",
                     DisplayType.Days => $"{timeLeft.TotalDays:0} days",
-                    DisplayType.Hours => $"{timeLeft.TotalHours:0} hours.",
+                    DisplayType.Hours => $"{timeLeft.TotalHours:0} hours",
                     DisplayType.Minutes => $"{timeLeft.TotalMinutes:0} minutes",
                     DisplayType.Seconds => $"{timeLeft.TotalSeconds:0} seconds",
                     DisplayType.Milliseconds => $"{timeLeft.TotalMilliseconds:0} milliseconds",
