@@ -5,12 +5,15 @@ COPY hub.sln .
 COPY Client/hub.Client.csproj Client/hub.Client.csproj
 COPY Server/hub.Server.csproj Server/hub.Server.csproj
 COPY Shared/hub.Shared.csproj Shared/hub.Shared.csproj
+COPY .nuke .nuke
+COPY Build Build
+COPY build.sh .
 
-RUN dotnet restore hub.sln
+RUN ./build.sh restore
 
 COPY . .
 
-RUN dotnet publish -c Release
+RUN ./build.sh publish 
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 as runner
 WORKDIR /hub
