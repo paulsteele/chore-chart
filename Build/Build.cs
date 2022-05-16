@@ -23,8 +23,8 @@ class Build : NukeBuild
     readonly string MigrationName;
 
     [Solution] readonly Solution Solution;
-    [PathExecutable]
-    readonly Tool Podman;
+    [PathExecutable("podman")] 
+    private readonly Tool _podman;
 
     Target Clean => _ => _
         .Before(Restore)
@@ -96,29 +96,29 @@ class Build : NukeBuild
     Target CreateDevContainers => _ => _
         .Executes(() =>
         {
-            Podman("run -d --name hub-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass mysql --default-authentication-plugin=mysql_native_password");
-            Podman("run -d --name hub-adminer -p 5200:8080 adminer");
+            _podman("run -d --name hub-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass mysql --default-authentication-plugin=mysql_native_password");
+            _podman("run -d --name hub-adminer -p 5200:8080 adminer");
         });
     
     Target StartDevContainers => _ => _
         .Executes(() =>
         {
-            Podman("start hub-db");
-            Podman("start hub-adminer");
+            _podman("start hub-db");
+            _podman("start hub-adminer");
         });
     
     Target StopDevContainers => _ => _
         .Before(RemoveDevContainers)
         .Executes(() =>
         {
-            Podman("stop hub-db");
-            Podman("stop hub-adminer");
+            _podman("stop hub-db");
+            _podman("stop hub-adminer");
         });
     
     Target RemoveDevContainers => _ => _
         .Executes(() =>
         {
-            Podman("rm hub-db");
-            Podman("rm hub-adminer");
+            _podman("rm hub-db");
+            _podman("rm hub-adminer");
         });
 }

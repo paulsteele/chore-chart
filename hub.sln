@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hub.Client", "Client\hub.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hub.Shared", "Shared\hub.Shared.csproj", "{954B0A98-1EE5-44C7-8784-BA7A4AA5953D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hub.Build", "build\hub.Build.csproj", "{B0DDA318-0140-4F17-B2AC-574547A886F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hub.Build", "Build\hub.Build.csproj", "{B0DDA318-0140-4F17-B2AC-574547A886F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
