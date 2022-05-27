@@ -11,6 +11,8 @@ namespace hub.Server.Configuration {
 		string DatabaseUser { get; }
 		string DatabasePassword { get; }
 		string DatabaseName { get; }
+		string DefaultUserName { get;  }
+		string DefaultUserPass { get;  }
 	}
 
 	public class EnvironmentVariableConfiguration : IEnvironmentVariableConfiguration {
@@ -26,6 +28,8 @@ namespace hub.Server.Configuration {
 			DatabaseUser = GetVar(nameof(DatabaseUser), "root", ConvertString);
 			DatabasePassword = GetVar(nameof(DatabasePassword), "pass", ConvertString);
 			DatabaseName = GetVar(nameof(DatabaseName), "hub", ConvertString);
+			DefaultUserName = GetVar(nameof(DefaultUserName), "user", ConvertString);
+			DefaultUserPass = GetVar(nameof(DefaultUserPass), "pass", ConvertString);
 		}
 
 		private static T GetVar<T>(string name, T defaultValue, Func<string, T> converter) {
@@ -51,5 +55,7 @@ namespace hub.Server.Configuration {
 		public string DatabaseUser { get; }
 		public string DatabasePassword { get; }
 		public string DatabaseName { get; }
+		public string DefaultUserName { get; }
+		public string DefaultUserPass { get; }
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Text;
 using Autofac;
@@ -59,6 +60,7 @@ namespace hub.Server
 
 			using ILifetimeScope setupScope = AutofacContainer.BeginLifetimeScope();
 			setupScope.Resolve<IDb>().Init();
+			setupScope.Resolve<EnsureUserHelper>().EnsureUser();
 		}
 
 		public void ConfigureServices(IServiceCollection services) {
