@@ -1,9 +1,10 @@
+using System;
 using hub.Server.Configuration;
-using hub.Shared.Models.Todo;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Logging;
 
 namespace hub.Server.Database {
 
@@ -15,11 +16,13 @@ namespace hub.Server.Database {
 			_configuration = configuration;
 		}
 		
-		public DbSet<TodoModel> Todos { get; set; }
-		public DbSet<TodoCompletion> TodosCompletions { get; set; }
-
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-			optionsBuilder.UseMySQL($"Server={_configuration.DatabaseUrl};Port={_configuration.DatabasePort};Database={_configuration.DatabaseName};Uid={_configuration.DatabaseUser};Pwd={_configuration.DatabasePassword};");
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			var connectionString = $"Server={_configuration.DatabaseUrl};Port={_configuration.DatabasePort};Database={_configuration.DatabaseName};Uid={_configuration.DatabaseUser};Pwd={_configuration.DatabasePassword};";
+			var serverVersion = ServerVersion.AutoDetect(connectionString);
+			optionsBuilder
+				.UseMySql(connectionString, serverVersion)
+				.EnableDetailedErrors();
 		}
 
 		// needed due to using mysql. See https://decovar.dev/blog/2018/03/20/csharp-dotnet-core-identity-mysql/

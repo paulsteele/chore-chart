@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.3.0" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
+    <PackageReference Include="Autofac" Version="6.4.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.5" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.9" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" /> 
@@ -24,6 +24,10 @@
     <_ContentIncludedByDefault Remove="Views\Scale\Scale.razor" />
     <_ContentIncludedByDefault Remove="Views\Scale\ScaleSetup.razor" />
     <_ContentIncludedByDefault Remove="Views\Account\Login.razor" />
+    <_ContentIncludedByDefault Remove="Views\Pages\Todo\TodoAllView.razor" />
+    <_ContentIncludedByDefault Remove="Views\Pages\Todo\TodoPage.razor" />
+    <_ContentIncludedByDefault Remove="Views\Components\Todo\TodoEntry.razor" />
+    <_ContentIncludedByDefault Remove="Views\Components\Todo\TodoItem.razor" />
   </ItemGroup>
 
 </Project>
