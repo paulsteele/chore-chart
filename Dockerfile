@@ -9,7 +9,7 @@ COPY .nuke .nuke
 COPY Build Build
 COPY build.sh .
 
-RUN ./buildi.sh restore
+RUN ./build.sh restore
 
 COPY . .
 
