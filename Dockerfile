@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 as builder
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
 WORKDIR /hub
 
 COPY hub.sln .
@@ -15,11 +15,11 @@ COPY . .
 
 RUN ./build.sh publish 
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runner
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runner
 WORKDIR /hub
 
-COPY --from=builder /hub/Client/bin/Release/net6.0/publish ./Client
-COPY --from=builder /hub/Server/bin/Release/net6.0/publish ./Server
+COPY --from=builder /hub/Client/bin/Release/net8.0/publish ./Client
+COPY --from=builder /hub/Server/bin/Release/net8.0/publish ./Server
 
 WORKDIR /hub/Client
 
