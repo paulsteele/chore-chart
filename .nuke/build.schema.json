@@ -6,13 +6,17 @@
     "build": {
       "type": "object",
       "properties": {
-        "Configuration": {
+        "_configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local)",
           "enum": [
             "Debug",
             "Release"
           ]
+        },
+        "_migrationName": {
+          "type": "string",
+          "description": "Name of migration to modify"
         },
         "Continue": {
           "type": "boolean",
@@ -42,10 +46,6 @@
             "VisualStudio",
             "VSCode"
           ]
-        },
-        "MigrationName": {
-          "type": "string",
-          "description": "Name of migration to modify"
         },
         "NoLogo": {
           "type": "boolean",

@@ -17,12 +17,13 @@ class Build : NukeBuild
     public static int Main () => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build - Default is 'Debug' (local)")]
-    readonly Configuration Configuration = Configuration.Debug;
+    private readonly Configuration _configuration = Configuration.Debug;
     [Parameter("Name of migration to modify")]
-    readonly string MigrationName;
+    private readonly string _migrationName;
 
-    [Solution] readonly Solution Solution;
-    [PathExecutable("podman")] 
+    // ReSharper disable once InconsistentNaming
+    [Solution] private readonly Solution Solution;
+    [PathVariable("podman")] 
     private readonly Tool _podman;
 
     Target Clean => _ => _
@@ -31,9 +32,9 @@ class Build : NukeBuild
         {
             RootDirectory
                 .GlobDirectories("**/bin", "**/obj")
-                .Where(d => !d.ToString().Contains("NativeBle"))
-                .Where(d => !d.ToString().Contains("Build"))
-                .ForEach(DeleteDirectory);
+                .Where(d => d.ToString()!.Contains("NativeBle"))
+                .Where(d => d.ToString()!.Contains("Build"))
+                .ForEach(s => s.DeleteDirectory());
         });
 
     Target Restore => _ => _
@@ -49,7 +50,7 @@ class Build : NukeBuild
         {
             DotNetBuild(s => s
                 .SetProjectFile(Solution)
-                .SetConfiguration(Configuration)
+                .SetConfiguration(_configuration)
                 .EnableNoRestore());
         });
 
@@ -58,7 +59,7 @@ class Build : NukeBuild
         {
             DotNetRun(s => s
                 .SetProjectFile(Solution.GetProject("hub.Server"))
-                .SetConfiguration(Configuration)
+                .SetConfiguration(_configuration)
                 .EnableNoRestore()
             );
         });
@@ -82,13 +83,13 @@ class Build : NukeBuild
                     .SetProject(Solution.GetProject("hub.Server")));
         });
     Target AddMigration => _ => _
-        .Requires(() => MigrationName)
+        .Requires(() => _migrationName)
         .Executes(() =>
         {
             EntityFrameworkTasks
                 .EntityFrameworkMigrationsAdd(s => s
                     .SetProject(Solution.GetProject("hub.Server"))
-                    .SetName(MigrationName)
+                    .SetName(_migrationName)
                 );
         });
 
