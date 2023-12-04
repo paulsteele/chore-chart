@@ -19,100 +19,92 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace hub.Server
+namespace hub.Server;
+
+public class Startup(IConfiguration configuration)
 {
-	public class Startup
+	public ILifetimeScope AutofacContainer { get; private set; }
+
+	public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 	{
-		public Startup(IConfiguration configuration)
+		AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+		if (env.IsDevelopment())
 		{
-			Configuration = configuration;
+			app.UseDeveloperExceptionPage();
+			app.UseWebAssemblyDebugging();
+		}
+		else
+		{
+			app.UseExceptionHandler("/Error");
 		}
 
-		public IConfiguration Configuration { get; }
+		app.UseBlazorFrameworkFiles();
+		app.UseStaticFiles();
 
-		public ILifetimeScope AutofacContainer { get; private set; }
+		app.UseRouting();
+		app.UseAuthentication();
+		app.UseAuthorization();
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			AutofacContainer = app.ApplicationServices.GetAutofacRoot();
-			if (env.IsDevelopment())
+		app.UseEndpoints(endpoints => {
+			endpoints.MapRazorPages();
+			endpoints.MapControllers();
+			endpoints.MapFallbackToFile("index.html");
+		});
+
+		using ILifetimeScope setupScope = AutofacContainer.BeginLifetimeScope();
+		setupScope.Resolve<IDb>().Init();
+		setupScope.Resolve<EnsureUserHelper>().EnsureUser().Wait();
+	}
+
+	public void ConfigureServices(IServiceCollection services) {
+		var configuration = new EnvironmentVariableConfiguration();
+		services
+			.AddDefaultIdentity<IdentityUser>((options => {
+				options.Password.RequireDigit = false;
+				options.Password.RequiredLength = 0;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequiredUniqueChars = 0;
+				options.Password.RequireNonAlphanumeric = false;
+			}))
+			.AddRoles<IdentityRole>()
+			.AddEntityFrameworkStores<DatabaseContext>();
+
+		services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+			.AddJwtBearer(options =>
 			{
-				app.UseDeveloperExceptionPage();
-				app.UseWebAssemblyDebugging();
-			}
-			else
-			{
-				app.UseExceptionHandler("/Error");
-			}
-
-			app.UseBlazorFrameworkFiles();
-			app.UseStaticFiles();
-
-			app.UseRouting();
-			app.UseAuthentication();
-			app.UseAuthorization();
-
-			app.UseEndpoints(endpoints => {
-					endpoints.MapRazorPages();
-					endpoints.MapControllers();
-					endpoints.MapFallbackToFile("index.html");
-			});
-
-			using ILifetimeScope setupScope = AutofacContainer.BeginLifetimeScope();
-			setupScope.Resolve<IDb>().Init();
-			setupScope.Resolve<EnsureUserHelper>().EnsureUser().Wait();
-		}
-
-		public void ConfigureServices(IServiceCollection services) {
-			var configuration = new EnvironmentVariableConfiguration();
-			services
-				.AddDefaultIdentity<IdentityUser>((options => {
-					options.Password.RequireDigit = false;
-					options.Password.RequiredLength = 0;
-					options.Password.RequireLowercase = false;
-					options.Password.RequireUppercase = false;
-					options.Password.RequiredUniqueChars = 0;
-					options.Password.RequireNonAlphanumeric = false;
-				}))
-				.AddRoles<IdentityRole>()
-				.AddEntityFrameworkStores<DatabaseContext>();
-
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer(options =>
+				options.TokenValidationParameters = new TokenValidationParameters
 				{
-					options.TokenValidationParameters = new TokenValidationParameters
-					{
-						ValidateIssuer = true,
-						ValidateAudience = true,
-						ValidateLifetime = true,
-						ValidateIssuerSigningKey = true,
-						ValidIssuer = configuration.JwtIssuer,
-						ValidAudience = configuration.JwtAudience,
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.JwtSecurityKey))
-					};
-				});
-			services.AddControllersWithViews(options => {
-				var policy = new AuthorizationPolicyBuilder()
-					.RequireAuthenticatedUser()
-					.Build();
-				options.Filters.Add(new AuthorizeFilter(policy));
+					ValidateIssuer = true,
+					ValidateAudience = true,
+					ValidateLifetime = true,
+					ValidateIssuerSigningKey = true,
+					ValidIssuer = configuration.JwtIssuer,
+					ValidAudience = configuration.JwtAudience,
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.JwtSecurityKey))
+				};
 			});
-			services.AddRazorPages();
-		}
+		services.AddControllersWithViews(options => {
+			var policy = new AuthorizationPolicyBuilder()
+				.RequireAuthenticatedUser()
+				.Build();
+			options.Filters.Add(new AuthorizeFilter(policy));
+		});
+		services.AddRazorPages();
+	}
 
-		public void ConfigureContainer(ContainerBuilder builder)
-		{
-			var assembly = Assembly.GetExecutingAssembly();
+	public void ConfigureContainer(ContainerBuilder builder)
+	{
+		var assembly = Assembly.GetExecutingAssembly();
 
-			builder.RegisterAssemblyTypes(assembly);
-			builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
+		builder.RegisterAssemblyTypes(assembly);
+		builder.RegisterAssemblyTypes(assembly).AsImplementedInterfaces();
 
-			builder.Register(context => LoggerFactory.Create(logBuilder => logBuilder.AddConsole())).As<ILoggerFactory>();
+		builder.Register(context => LoggerFactory.Create(logBuilder => logBuilder.AddConsole())).As<ILoggerFactory>();
 
-			builder.RegisterType<Db>().As<IDb>().SingleInstance();
-			builder.RegisterType<Bluetooth>().As<IBluetooth>().SingleInstance();
-			builder.RegisterType<EnvironmentVariableConfiguration>().As<IEnvironmentVariableConfiguration>().SingleInstance();
-			CommonContainer.Register(builder);
-		}
+		builder.RegisterType<Db>().As<IDb>().SingleInstance();
+		builder.RegisterType<Bluetooth>().As<IBluetooth>().SingleInstance();
+		builder.RegisterType<EnvironmentVariableConfiguration>().As<IEnvironmentVariableConfiguration>().SingleInstance();
+		CommonContainer.Register(builder);
 	}
 }

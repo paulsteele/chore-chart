@@ -1,32 +1,31 @@
 ﻿using hub.Shared.Bases;
 
-namespace hub.Client.Services.Alerts
+namespace hub.Client.Services.Alerts;
+
+public interface IAlertService : INotifyStateChanged
 {
-    public interface IAlertService : INotifyStateChanged
+    string CurrentTitle { get; }
+    string CurrentMessage { get; }
+    void ShowAlert(string title, string message);
+    void DismissAlert();
+}
+
+public class AlertService : BaseNotifyStateChanged, IAlertService
+{
+    public string CurrentTitle { get; private set; }
+    public string CurrentMessage { get; private set; }
+
+    public void ShowAlert(string title, string message)
     {
-        string CurrentTitle { get; }
-        string CurrentMessage { get; }
-        void ShowAlert(string title, string message);
-        void DismissAlert();
+        CurrentTitle = title;
+        CurrentMessage = message;
+        NotifyStateChanged();
     }
 
-    public class AlertService : BaseNotifyStateChanged, IAlertService
+    public void DismissAlert()
     {
-        public string CurrentTitle { get; private set; }
-        public string CurrentMessage { get; private set; }
-
-        public void ShowAlert(string title, string message)
-        {
-            CurrentTitle = title;
-            CurrentMessage = message;
-            NotifyStateChanged();
-        }
-
-        public void DismissAlert()
-        {
-            CurrentTitle = null;
-            CurrentMessage = null;
-            NotifyStateChanged();
-        }
+        CurrentTitle = null;
+        CurrentMessage = null;
+        NotifyStateChanged();
     }
 }

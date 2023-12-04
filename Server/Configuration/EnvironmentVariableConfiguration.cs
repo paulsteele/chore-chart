@@ -1,61 +1,45 @@
 using System;
 
-namespace hub.Server.Configuration {
-	public interface IEnvironmentVariableConfiguration {
-		string JwtSecurityKey { get; }
-		string JwtIssuer { get; }
-		string JwtAudience { get; }
-		int JwtExpiryHours { get; }
-		string DatabaseUrl { get; }
-		string DatabasePort { get; }
-		string DatabaseUser { get; }
-		string DatabasePassword { get; }
-		string DatabaseName { get; }
-		string DefaultUserName { get;  }
-		string DefaultUserPass { get;  }
+namespace hub.Server.Configuration;
+
+public interface IEnvironmentVariableConfiguration {
+	string JwtSecurityKey { get; }
+	string JwtIssuer { get; }
+	string JwtAudience { get; }
+	int JwtExpiryHours { get; }
+	string DatabaseUrl { get; }
+	string DatabasePort { get; }
+	string DatabaseUser { get; }
+	string DatabasePassword { get; }
+	string DatabaseName { get; }
+	string DefaultUserName { get;  }
+	string DefaultUserPass { get;  }
+}
+
+public class EnvironmentVariableConfiguration : IEnvironmentVariableConfiguration {
+	private static T GetVar<T>(string name, T defaultValue, Func<string, T> converter) {
+		var envVar = Environment.GetEnvironmentVariable(name);
+		return envVar != null ? converter(envVar) : defaultValue;
 	}
 
-	public class EnvironmentVariableConfiguration : IEnvironmentVariableConfiguration {
-
-		public EnvironmentVariableConfiguration() {
-
-			JwtSecurityKey = GetVar(nameof(JwtSecurityKey), "default-signing-key", ConvertString);
-			JwtIssuer = GetVar(nameof(JwtIssuer), "http://localhost", ConvertString);
-			JwtAudience = GetVar(nameof(JwtAudience), "http://localhost", ConvertString);
-			JwtExpiryHours = GetVar(nameof(JwtExpiryHours), 10, ConvertInt);
-			DatabaseUrl = GetVar(nameof(DatabaseUrl), "localhost", ConvertString);
-			DatabasePort = GetVar(nameof(DatabasePort), "3306", ConvertString);
-			DatabaseUser = GetVar(nameof(DatabaseUser), "root", ConvertString);
-			DatabasePassword = GetVar(nameof(DatabasePassword), "pass", ConvertString);
-			DatabaseName = GetVar(nameof(DatabaseName), "hub", ConvertString);
-			DefaultUserName = GetVar(nameof(DefaultUserName), "user", ConvertString);
-			DefaultUserPass = GetVar(nameof(DefaultUserPass), "pass", ConvertString);
-		}
-
-		private static T GetVar<T>(string name, T defaultValue, Func<string, T> converter) {
-			var envVar = Environment.GetEnvironmentVariable(name);
-			return envVar != null ? converter(envVar) : defaultValue;
-		}
-
-		private static string ConvertString(string s) {
-			return s;
-		}
-
-		private static int ConvertInt(string s) {
-			return int.Parse(s);
-		}
-
-		public string JwtSecurityKey { get; }
-		public string JwtIssuer { get; }
-		public string JwtAudience { get; }
-		public int JwtExpiryHours { get; }
-		
-		public string DatabaseUrl { get; }
-		public string DatabasePort { get; }
-		public string DatabaseUser { get; }
-		public string DatabasePassword { get; }
-		public string DatabaseName { get; }
-		public string DefaultUserName { get; }
-		public string DefaultUserPass { get; }
+	private static string ConvertString(string s) {
+		return s;
 	}
+
+	private static int ConvertInt(string s) {
+		return int.Parse(s);
+	}
+
+	public string JwtSecurityKey { get; } = GetVar(nameof(JwtSecurityKey), "default-signing-key", ConvertString);
+	public string JwtIssuer { get; } = GetVar(nameof(JwtIssuer), "http://localhost", ConvertString);
+	public string JwtAudience { get; } = GetVar(nameof(JwtAudience), "http://localhost", ConvertString);
+	public int JwtExpiryHours { get; } = GetVar(nameof(JwtExpiryHours), 10, ConvertInt);
+
+	public string DatabaseUrl { get; } = GetVar(nameof(DatabaseUrl), "localhost", ConvertString);
+	public string DatabasePort { get; } = GetVar(nameof(DatabasePort), "3306", ConvertString);
+	public string DatabaseUser { get; } = GetVar(nameof(DatabaseUser), "root", ConvertString);
+	public string DatabasePassword { get; } = GetVar(nameof(DatabasePassword), "pass", ConvertString);
+	public string DatabaseName { get; } = GetVar(nameof(DatabaseName), "hub", ConvertString);
+	public string DefaultUserName { get; } = GetVar(nameof(DefaultUserName), "user", ConvertString);
+	public string DefaultUserPass { get; } = GetVar(nameof(DefaultUserPass), "pass", ConvertString);
 }

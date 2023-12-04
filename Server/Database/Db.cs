@@ -1,24 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace hub.Server.Database {
-	public interface IDb {
-		void Init();
-		DatabaseContext DatabaseContext { get; }
-	}
+namespace hub.Server.Database;
 
-	public class Db : IDb {
-		private readonly ILogger _logger;
-		public DatabaseContext DatabaseContext { get; }
+public interface IDb {
+	void Init();
+	DatabaseContext DatabaseContext { get; }
+}
 
-		public Db(ILogger logger, DatabaseContext databaseContext) {
-			_logger = logger;
-			DatabaseContext = databaseContext;
-		}
+public class Db(ILogger logger, DatabaseContext databaseContext) : IDb {
+	public DatabaseContext DatabaseContext { get; } = databaseContext;
 
-		public void Init() {
-			_logger.LogInformation("Initializing Database");
-			DatabaseContext.Database.Migrate();
-		}
+	public void Init() {
+		logger.LogInformation("Initializing Database");
+		DatabaseContext.Database.Migrate();
 	}
 }

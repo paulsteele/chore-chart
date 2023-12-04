@@ -11,51 +11,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
-namespace hub.Server.Controllers {
+namespace hub.Server.Controllers;
 
-	[ApiController]
-	[AllowAnonymous]
-	[Route("login")]
-	public class LoginController : ControllerBase {
-		private readonly ILogger _logger;
-		private readonly SignInManager<IdentityUser> _signInManager;
-		private readonly EnvironmentVariableConfiguration _configuration;
+[ApiController]
+[AllowAnonymous]
+[Route("login")]
+public class LoginController(
+	ILogger logger,
+	SignInManager<IdentityUser> signInManager,
+	EnvironmentVariableConfiguration configuration
+) : ControllerBase {
+	
+	[HttpPost]
+	public async Task<IActionResult> Login([FromBody]LoginModel loginModel) {
 
-		public LoginController(
-			ILogger logger,
-			SignInManager<IdentityUser> signInManager,
-			EnvironmentVariableConfiguration configuration
-		) {
-			_logger = logger;
-			_signInManager = signInManager;
-			_configuration = configuration;
-		}
+		var result = await signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
 
-		[HttpPost]
-		public async Task<IActionResult> Login([FromBody]LoginModel loginModel) {
+		if (!result.Succeeded) return BadRequest(new LoginResult { Success = false, Error = "Username or password are invalid." });
 
-			var result = await _signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
+		var claims = new[]
+		{
+			new Claim(ClaimTypes.Name, loginModel.Username)
+		};
 
-			if (!result.Succeeded) return BadRequest(new LoginResult { Success = false, Error = "Username or password are invalid." });
+		var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.JwtSecurityKey));
+		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+		var expiry = DateTime.Now.AddHours(configuration.JwtExpiryHours);
 
-			var claims = new[]
-			{
-				new Claim(ClaimTypes.Name, loginModel.Username)
-			};
+		var token = new JwtSecurityToken(
+			configuration.JwtIssuer,
+			configuration.JwtAudience,
+			claims,
+			expires: expiry,
+			signingCredentials: creds
+		);
 
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.JwtSecurityKey));
-			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-			var expiry = DateTime.Now.AddHours(_configuration.JwtExpiryHours);
-
-			var token = new JwtSecurityToken(
-				_configuration.JwtIssuer,
-				_configuration.JwtAudience,
-				claims,
-				expires: expiry,
-				signingCredentials: creds
-			);
-
-			return Ok(new LoginResult { Success = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
-		}
+		return Ok(new LoginResult { Success = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
 	}
 }

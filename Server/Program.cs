@@ -3,20 +3,18 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace hub.Server
-{
-	public static class Program {
+namespace hub.Server;
 
-		public static async Task Main(string[] args)
-		{
-			IHost host = Host.CreateDefaultBuilder(args)
-				.UseServiceProviderFactory(new AutofacServiceProviderFactory())
-				.ConfigureWebHostDefaults(webHostBuilder => {
-					webHostBuilder.UseStartup<Startup>();
-				})
-				.Build();
+public static class Program {
+	public static async Task Main(string[] args)
+	{
+		var host = Host.CreateDefaultBuilder(args)
+			.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+			.ConfigureWebHostDefaults(webHostBuilder => {
+				webHostBuilder.UseStartup<Startup>();
+			})
+			.Build();
 
-			await host.RunAsync();
-		}
+		await host.RunAsync();
 	}
 }
