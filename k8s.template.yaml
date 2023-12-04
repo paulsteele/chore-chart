@@ -35,7 +35,7 @@ spec:
     - name: hub
       protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -59,7 +59,7 @@ spec:
           image: registry.paul-steele.com/hub:$BUILD_TAG
           ports:
             - name: hub
-              containerPort: 80
+              containerPort: 8080
           imagePullPolicy: Always
           env:
             - name: DatabaseUrl
