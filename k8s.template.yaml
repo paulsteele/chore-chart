@@ -1,13 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/hostname: hub.paul-steele.com
-    external-dns.alpha.kubernetes.io/target: "paulsteelehome.duckdns.org"
   name: hub
   namespace: deployments
 spec:
+  ingressClassName: "cloudflare-tunnel"
   rules:
     - host: hub.paul-steele.com
       http:
