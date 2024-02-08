@@ -30,7 +30,7 @@ public class EnvironmentVariableConfiguration : IEnvironmentVariableConfiguratio
 		return int.Parse(s);
 	}
 
-	public string JwtSecurityKey { get; } = GetVar(nameof(JwtSecurityKey), "default-signing-key", ConvertString);
+	public string JwtSecurityKey { get; } = GetVar(nameof(JwtSecurityKey), "default-signing-key-that-is-large-enough-to-hit-256-bytes", ConvertString);
 	public string JwtIssuer { get; } = GetVar(nameof(JwtIssuer), "http://localhost", ConvertString);
 	public string JwtAudience { get; } = GetVar(nameof(JwtAudience), "http://localhost", ConvertString);
 	public int JwtExpiryHours { get; } = GetVar(nameof(JwtExpiryHours), 10, ConvertInt);
