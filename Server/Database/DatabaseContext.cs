@@ -1,4 +1,5 @@
 using hub.Server.Configuration;
+using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,8 @@ using Microsoft.EntityFrameworkCore.Design;
 namespace hub.Server.Database;
 
 public class DatabaseContext(EnvironmentVariableConfiguration configuration) : IdentityDbContext {
+	
+	public DbSet<Category> Categories { get; set; }
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		var connectionString = $"Server={configuration.DatabaseUrl};Port={configuration.DatabasePort};Database={configuration.DatabaseName};Uid={configuration.DatabaseUser};Pwd={configuration.DatabasePassword};";
