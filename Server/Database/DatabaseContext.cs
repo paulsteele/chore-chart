@@ -1,4 +1,5 @@
 using hub.Server.Configuration;
+using hub.Shared.Converters;
 using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -46,6 +47,10 @@ public class DatabaseContext(EnvironmentVariableConfiguration configuration) : I
 		builder.Entity<IdentityUserClaim<string>>(entity => entity.Property(m => m.UserId).HasMaxLength(85));
 		builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.Id).HasMaxLength(85));
 		builder.Entity<IdentityRoleClaim<string>>(entity => entity.Property(m => m.RoleId).HasMaxLength(85));
+
+		builder.Entity<Category>()
+			.Property(nameof(Category.Color))
+			.HasConversion<ColorValueConverter>();
 	}
 }
 
