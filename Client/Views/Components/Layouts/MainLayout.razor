@@ -1,9 +1,7 @@
-@using Microsoft.Extensions.Logging
-@using hub.Client.Services.Authentication
+@using hub.Client.Services.Loading
 @inherits LayoutComponentBase
-@inject HttpClient _http
-@inject ILogger _logger
-@inject IAuthService _authService
+@inject ILoadingService LoadingService
+@implements IDisposable
 
 @{
 	var anonymousOptions = new List<(string, string)> {("Login", "/login")};
@@ -19,7 +17,32 @@
 			<Navbar Items="@anonymousOptions"></Navbar>
 		</NotAuthorized>
 	</AuthorizeView>
+	@if (LoadingService.IsLoading)
+	{
+		<div class="centering">
+			<div class="loading">
+				<div class="spinner-border text-primary" role="status">
+					<span class="sr-only"></span>
+				</div>
+				<p>Loading...</p>
+			</div>
+		</div>
+	}
 	<div class="container">
 		@Body
 	</div>
 </div>
+
+@code
+{
+	protected override void OnInitialized()
+	{
+		LoadingService.StateChanged += StateHasChanged;
+		base.OnInitialized();
+	}
+
+	public void Dispose()
+	{
+		LoadingService.StateChanged -= StateHasChanged;
+	}
+}

@@ -8,6 +8,7 @@ using Blazored.LocalStorage;
 using hub.Client.Logging;
 using hub.Client.Services.Alerts;
 using hub.Client.Services.Authentication;
+using hub.Client.Services.Loading;
 using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -46,6 +47,10 @@ namespace hub.Client
 
 			builder.RegisterType<AlertService>()
 				.As<IAlertService>()
+				.SingleInstance();
+
+			builder.RegisterType<LoadingService>()
+				.As<ILoadingService>()
 				.SingleInstance();
 
 			CommonContainer.Register(builder);

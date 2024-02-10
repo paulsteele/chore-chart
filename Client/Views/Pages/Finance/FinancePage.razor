@@ -1,5 +1,20 @@
 @page "/finance"
 @using hub.Client.ViewModels.Finance
 @inject IFinanceViewModel FinanceViewModel
+@implements IDisposable
 
 <h3 class="text-center">Finance</h3>
+
+@code
+{
+	protected override void OnInitialized()
+	{
+		FinanceViewModel.StateChanged += StateHasChanged;
+		FinanceViewModel.Initialize();
+		base.OnInitialized();
+	}
+
+	public void Dispose() {
+		FinanceViewModel.StateChanged -= StateHasChanged;
+	}
+}
