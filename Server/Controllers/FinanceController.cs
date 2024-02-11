@@ -21,7 +21,7 @@ public class FinanceController(
 	[Route("categories")]
 	public IList<Category> GetCategories()
 	{
-		return database.Categories.ToList();
+		return database.Categories.OrderBy(c => c.Order).ToList();
 	}
 
 	[HttpPut]

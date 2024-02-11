@@ -7,6 +7,7 @@ namespace hub.Shared.Models.Finance;
 public class Category
 {
 	public int Id { get; set; }
+	public int Order { get; set; }
 	public string Name { get; set; }
 	public decimal Budget { get; set; }
 	public char Emoji { get; set; }
