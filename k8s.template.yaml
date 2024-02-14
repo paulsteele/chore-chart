@@ -20,6 +20,28 @@ spec:
     - hosts:
         - hub.paul-steele.com
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hell-yeah
+  namespace: deployments
+spec:
+  ingressClassName: "cloudflare-tunnel"
+  rules:
+    - host: hell-yeah.org 
+      http:
+        paths:
+          - backend:
+              service:
+                name: hub
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - hell-yeah.org
+---
 apiVersion: v1
 kind: Service
 metadata:
