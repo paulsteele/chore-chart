@@ -9,6 +9,7 @@ using hub.Client.Logging;
 using hub.Client.Services.Alerts;
 using hub.Client.Services.Authentication;
 using hub.Client.Services.Loading;
+using hub.Client.Views.Pages.HellYeah;
 using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -27,7 +28,16 @@ namespace hub.Client
 			builder.ConfigureContainer(new AutofacServiceProviderFactory(Register));
 			builder.Services.AddAuthorizationCore();
 			builder.Services.AddBlazoredLocalStorage();
-			builder.RootComponents.Add<App>("#app");
+
+			switch (_baseAddress.Host)
+			{
+				case "hell-yeah":
+					builder.RootComponents.Add<HellYeahPage>("#app");
+					break;
+				default:
+					builder.RootComponents.Add<App>("#app");
+					break;
+			}
 
 			await builder.Build().RunAsync();
 		}

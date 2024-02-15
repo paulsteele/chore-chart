@@ -1,0 +1,22 @@
+@using hub.Client.Views.Components.Layouts
+@using hub.Client.ViewModels.Countdown
+@inherits LayoutComponentBase
+
+@attribute [AllowAnonymous]
+@implements IDisposable
+
+@layout NoHeaderLayout
+@page "/hell-yeah"
+
+
+<h1>Hell Yeah</h1>
+
+@code {
+	protected override void OnInitialized() {
+		base.OnInitialized();
+	}
+
+	public void Dispose()
+	{
+	}
+}
