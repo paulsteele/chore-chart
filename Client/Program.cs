@@ -31,7 +31,7 @@ namespace hub.Client
 
 			switch (_baseAddress.Host)
 			{
-				case "hell-yeah":
+				case "hell-yeah.org":
 					builder.RootComponents.Add<HellYeahPage>("#app");
 					break;
 				default:
