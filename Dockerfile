@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
 WORKDIR /hub
 
+RUN dotnet workload install wasm-tools
+
 COPY hub.sln .
 COPY Client/hub.Client.csproj Client/hub.Client.csproj
 COPY Server/hub.Server.csproj Server/hub.Server.csproj
