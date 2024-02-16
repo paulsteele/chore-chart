@@ -1,5 +1,5 @@
 @using hub.Client.Views.Components.Layouts
-@using hub.Client.ViewModels.Countdown
+@using hub.Client.ViewModels.HellYeah
 @inherits LayoutComponentBase
 
 @attribute [AllowAnonymous]
@@ -8,15 +8,26 @@
 @layout NoHeaderLayout
 @page "/hell-yeah"
 
+@inject IHellYeahViewModel ViewModel
 
 <h1>Hell Yeah</h1>
+<h2>@Image</h2>
+
+<img src="@ViewModel.ImageHex" alt="hell-yeah"/>
 
 @code {
+	[SupplyParameterFromQuery]
+	[Parameter]
+	public string Image{ get => ViewModel.ImageUrl; set => ViewModel.ImageUrl = value;}
+
 	protected override void OnInitialized() {
 		base.OnInitialized();
+		ViewModel.StateChanged += StateHasChanged;
+		ViewModel.Initialize();
 	}
 
 	public void Dispose()
 	{
+		ViewModel.StateChanged -= StateHasChanged;
 	}
 }
