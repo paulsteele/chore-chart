@@ -23,8 +23,8 @@ RUN ./build.sh publish
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runner
 WORKDIR /hub
 
-COPY --from=builder /hub/Server/bin/Release/net8.0 /hub 
+COPY --from=builder /hub/Server/bin/Release/net8.0/publish /hub 
 
 WORKDIR /hub
 
-ENTRYPOINT [ "hub.Server" ]
+ENTRYPOINT [ "./hub.Server" ]
