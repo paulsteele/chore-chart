@@ -3,8 +3,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using hub.Shared.Bases;
 using Microsoft.Extensions.Logging;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
 
 namespace hub.Client.ViewModels.HellYeah;
 
@@ -50,8 +48,6 @@ public class HellYeahViewModel(ILogger logger) : BaseNotifyStateChanged, IHellYe
 			logger.LogInformation("BBBBB");
 			var stream = await httpClient.GetStreamAsync(ImageUrl);
 			logger.LogInformation("CCCCC");
-			var image = await Image.LoadAsync(stream);
-			logger.LogInformation("DDDDD");
 
 			// var settings = new MagickReadSettings
 			// {
@@ -66,7 +62,6 @@ public class HellYeahViewModel(ILogger logger) : BaseNotifyStateChanged, IHellYe
 
 			// image.Composite(caption, image.Height / 2, image.Width / 2, CompositeOperator.Over);
 			
-			ImageHex = image.ToBase64String(PngFormat.Instance);
 			logger.LogInformation("EEEEEE");
 		}
 		catch(Exception e)

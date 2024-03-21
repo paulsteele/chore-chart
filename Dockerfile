@@ -20,6 +20,8 @@ COPY . .
 
 RUN ./build.sh publish 
 
+RUN ls -alR
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runner
 WORKDIR /hub
 
