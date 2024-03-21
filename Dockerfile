@@ -20,12 +20,10 @@ COPY . .
 
 RUN ./build.sh publish 
 
-RUN ls -alR
-
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runner
 WORKDIR /hub
 
-COPY --from=builder /hub/Server/bin/Release/net8.0/publish /hub 
+COPY --from=builder /hub/Server/bin/Release/net8.0 /hub 
 
 WORKDIR /hub
 
