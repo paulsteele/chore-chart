@@ -42,6 +42,28 @@ spec:
     - hosts:
         - hell-yeah.org
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bull-moose
+  namespace: deployments
+spec:
+  ingressClassName: "cloudflare-tunnel"
+  rules:
+    - host: bull-moose.org
+      http:
+        paths:
+          - backend:
+              service:
+                name: hub
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - bull-moose.org
+---
 apiVersion: v1
 kind: Service
 metadata:

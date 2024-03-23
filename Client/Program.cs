@@ -9,6 +9,7 @@ using hub.Client.Logging;
 using hub.Client.Services.Alerts;
 using hub.Client.Services.Authentication;
 using hub.Client.Services.Loading;
+using hub.Client.Views.Pages.Countdown;
 using hub.Client.Views.Pages.HellYeah;
 using hub.Shared.Registration;
 using Microsoft.AspNetCore.Authorization;
@@ -33,6 +34,9 @@ namespace hub.Client
 			{
 				case "hell-yeah.org":
 					builder.RootComponents.Add<HellYeahPage>("#app");
+					break;
+				case "bull-moose.org":
+					builder.RootComponents.Add<CountdownPage>("#app");
 					break;
 				default:
 					builder.RootComponents.Add<App>("#app");

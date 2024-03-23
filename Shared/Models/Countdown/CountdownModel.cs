@@ -26,8 +26,13 @@ namespace hub.Shared.Models.Countdown
             string imageCredits,
             string audio,
             string audioCredits,
-            INowTimeProvider nowTimeProvider)
+            string background,
+            string backgroundCredits,
+            INowTimeProvider nowTimeProvider
+        )
         {
+            Background = background;
+            BackgroundCredits = backgroundCredits;
             _nowTimeProvider = nowTimeProvider;
             Name = name;
             DateTime = dateTime;
@@ -35,6 +40,8 @@ namespace hub.Shared.Models.Countdown
             Audio = audio;
             AudioCredits = audioCredits;
             Image = image;
+            Background = background;
+            BackgroundCredits = backgroundCredits;
             DisplayType = DisplayType.Days;
         }
 
@@ -43,6 +50,8 @@ namespace hub.Shared.Models.Countdown
         public string ImageCredits { get; }
         public string Audio { get; }
         public string AudioCredits { get; }
+        public string Background { get; }
+        public string BackgroundCredits { get; }
         private string Name { get; }
         private DateTime DateTime { get; }
 

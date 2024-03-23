@@ -19,7 +19,7 @@ namespace hub.Client.ViewModels.Countdown
         void GoToNextDisplay();
         void GoToPreviousDisplay();
         void SelectChristmas();
-        void SelectEndwalker();
+        void SelectFinalFantasy();
     }
 
     public class CountdownViewModel : BaseNotifyStateChanged, ICountdownViewModel
@@ -29,7 +29,7 @@ namespace hub.Client.ViewModels.Countdown
         private Timer _timer;
 
         private CountdownModel _christmasCountdown;
-        private CountdownModel _endwalkerCountdown;
+        private CountdownModel _finalFantasyCountdown;
 
         public CountdownViewModel(IJSRuntime jsRuntime, INowTimeProvider nowTimeProvider)
         {
@@ -51,19 +51,23 @@ namespace hub.Client.ViewModels.Countdown
                 "https://www.cutthatdesign.com/free-svg-christmas-tree-with-lights-design/",
                 "assets/countdown/silent-night.mp4",
                 "https://soundcloud.com/e-soundtrax/christmas-silent-night-royalty",
+                "assets/countdown/background.jpg",
+                "https://wallpaperaccess.com/simple-winter",
                 nowTimeProvider
             );
             
-            _endwalkerCountdown = new CountdownModel(
-                "Endwalker Early Access",
-                new DateTime(2021, 12, 3, 4, 0, 0, 0), 
-                "assets/countdown/endwalker.png", 
-                "https://www.pngaaa.com/detail/6225449",
-                "assets/countdown/endwalker.mp3",
-                "https://www.youtube.com/watch?v=khPMuue_7oo",
+            _finalFantasyCountdown = new CountdownModel(
+                "Dawntrail Early Access",
+                new DateTime(2024, 6, 28, 6, 0, 0, 0), 
+                "assets/countdown/dawntrail.png", 
+                "https://finalfantasy.fandom.com/wiki/Final_Fantasy_XIV:_Dawntrail",
+                "assets/countdown/dawntrail.mp3",
+                "https://www.youtube.com/watch?v=lvRAmjuFSeI",
+                "assets/countdown/dawntrailbg.png",
+                "https://wall.alphacoders.com/big.php?i=1342074",
                 nowTimeProvider
             );
-            CurrentModel = _christmasCountdown;
+            CurrentModel = _finalFantasyCountdown;
         }
 
         public void StartTimer()
@@ -77,7 +81,7 @@ namespace hub.Client.ViewModels.Countdown
         private void ChangeDisplay(int diff)
         {
             _christmasCountdown.CycleDisplayType(diff);
-            _endwalkerCountdown.CycleDisplayType(diff);
+            _finalFantasyCountdown.CycleDisplayType(diff);
             _timer.Stop();
             _timer.Interval = TimerDelay;
             _timer.Start();
@@ -121,9 +125,9 @@ namespace hub.Client.ViewModels.Countdown
             SelectCountdown(_christmasCountdown).ConfigureAwait(false);
         }
 
-        public void SelectEndwalker()
+        public void SelectFinalFantasy()
         {
-            SelectCountdown(_endwalkerCountdown).ConfigureAwait(false);
+            SelectCountdown(_finalFantasyCountdown).ConfigureAwait(false);
         }
 
         public CountdownModel CurrentModel { get; private set; }
