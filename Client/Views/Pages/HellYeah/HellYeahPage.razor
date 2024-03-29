@@ -1,29 +1,85 @@
 @using hub.Client.Views.Components.Layouts
 @using hub.Client.ViewModels.HellYeah
-@inherits LayoutComponentBase
+@using Excubo.Blazor.Canvas
 
+@inherits LayoutComponentBase
 @attribute [AllowAnonymous]
 @implements IDisposable
+
+@inject IHellYeahViewModel ViewModel
+@inject IJSRuntime JsRuntime
 
 @layout NoHeaderLayout
 @page "/hell-yeah"
 
-@inject IHellYeahViewModel ViewModel
+<img 
+	id="content-image" 
+	style="display: none" 
+	src="@ViewModel.ImageUrl" 
+	alt="" 
+	@onload="DrawCanvas"
+/>
+<div 
+	class="centering" 
+	style="position: absolute; left: 0; top: 0; background-image: linear-gradient(#28282B, #111111);"
+	data-bs-theme="dark"
+	>
+	<div class="text-center justify-content-center" style="display: block">
+		<Canvas @ref="_canvas" width="@RenderWidth" height="@RenderHeight" style="width: 70vw; height: 40vw;">
+		</Canvas>
 
-<h1>Hell Yeah</h1>
-<h2>@Image</h2>
-
-<img src="@ViewModel.ImageHex" alt="hell-yeah"/>
+		<div style="width: 70vw; display: inline-block">
+			<EditForm
+				Model="ViewModel"
+				OnSubmit="ViewModel.GoToPermalink">
+				<div class="row">
+					<div class="col-auto">
+						<label for="urlEntry" style="color: #CDCDCD; position: relative; top: 7px">Background Url:</label>
+					</div>
+					<div class="col">
+						<InputText @bind-Value="ViewModel!.PendingImageUrl" id="urlEntry" class="form-control" />
+					</div>
+					<div class="col-auto">
+						<button type="submit" class="btn btn-primary">Update</button>
+					</div>
+				</div>
+			</EditForm>
+		</div>
+	</div>
+</div>
 
 @code {
 	[SupplyParameterFromQuery]
 	[Parameter]
 	public string Image{ get => ViewModel.ImageUrl; set => ViewModel.ImageUrl = value;}
+	
+	Canvas _canvas;
+	private const int RenderWidth = 1920;
+	private const int RenderHeight = 1080;
 
 	protected override void OnInitialized() {
 		base.OnInitialized();
 		ViewModel.StateChanged += StateHasChanged;
-		ViewModel.Initialize();
+	}
+
+	private async Task DrawCanvas()
+	{
+		await JsRuntime.InvokeVoidAsync("eval", "contentImage = document.getElementById('content-image')");
+		await using var context = await _canvas.GetContext2DAsync();
+
+		const string text = "Hell Yeah";
+		const int x = RenderWidth / 2;
+		const int y = RenderHeight / 2;
+
+		await context.DrawImageAsync("contentImage", 0, 0, RenderWidth, RenderHeight);
+		await context.FontAsync("300px Impact, sans-serif");
+		await context.TextAlignAsync(TextAlign.Center);
+		await context.TextBaseLineAsync(TextBaseLine.Middle);
+		await context.StrokeStyleAsync("black");
+		await context.LineWidthAsync(15);
+		await context.StrokeTextAsync(text, x, y);
+		await context.FillStyleAsync("white");
+		await context.FillTextAsync(text, x, y);
 	}
 
 	public void Dispose()

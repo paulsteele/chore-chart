@@ -1,22 +1,21 @@
 using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Web;
 using hub.Shared.Bases;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Components;
 
 namespace hub.Client.ViewModels.HellYeah;
 
 public interface IHellYeahViewModel : INotifyStateChanged
 {
 	string ImageUrl { get; set; }
-	Task Initialize();
-	string ImageHex { get; }
+	string PendingImageUrl { get; set; }
+	void GoToPermalink();
 }
 
-public class HellYeahViewModel(ILogger logger) : BaseNotifyStateChanged, IHellYeahViewModel
+public class HellYeahViewModel(NavigationManager navigationManager) : BaseNotifyStateChanged, IHellYeahViewModel
 {
 	private string _imageUrl = "https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-	// private string _imageUrl = "https://upload.wikimedia.org/wikipedia/commons/4/4a/100x100_logo.png";
+	public string PendingImageUrl { get; set; }
 
 	public string ImageUrl
 	{
@@ -27,46 +26,21 @@ public class HellYeahViewModel(ILogger logger) : BaseNotifyStateChanged, IHellYe
 			{
 				return;
 			}
-
-			_imageUrl = value;
-		}
-	}
-
-	private string _imageHex;
-	public string ImageHex
-	{
-		get => _imageHex;
-		private set => SetAndNotify(ref _imageHex, value);
-	}
-
-	public async Task Initialize()
-	{
-		try
-		{
-			logger.LogInformation("AAAAAA");
-			using var httpClient = new HttpClient();
-			logger.LogInformation("BBBBB");
-			var stream = await httpClient.GetStreamAsync(ImageUrl);
-			logger.LogInformation("CCCCC");
-
-			// var settings = new MagickReadSettings
-			// {
-			// 	Font = "Calibri",
-			// 	TextGravity = Gravity.Center,
-			// 	BackgroundColor = MagickColors.Transparent,
-			// 	Height = image.Height, 
-			// 	Width = image.Width 
-			// };
-
-			// using var caption = new MagickImage($"caption:Hell Yeah", settings);
-
-			// image.Composite(caption, image.Height / 2, image.Width / 2, CompositeOperator.Over);
 			
-			logger.LogInformation("EEEEEE");
+			_imageUrl = HttpUtility.UrlDecode(value);
 		}
-		catch(Exception e)
-		{
-			logger.LogError($"{e.Message} - {e.StackTrace}");
-		}
+	}
+
+
+	public void GoToPermalink()
+	{
+		var locationOfQuery = navigationManager.Uri.IndexOf("?", StringComparison.Ordinal);
+		var pathWithoutQuery = locationOfQuery != -1
+			? navigationManager.Uri[..locationOfQuery]
+			: navigationManager.Uri;
+
+		var secondUrl = HttpUtility.UrlEncode(PendingImageUrl);
+
+		navigationManager.NavigateTo($"{pathWithoutQuery}?Image={secondUrl}");
 	}
 }
