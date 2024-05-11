@@ -96,7 +96,7 @@ class Build : NukeBuild
     Target CreateDevContainers => _ => _
         .Executes(() =>
         {
-            _podman("run -d --name hub-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass mysql --default-authentication-plugin=mysql_native_password");
+            _podman("run -d --name hub-db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=pass mysql --mysql-native-password=ON");
             _podman("run -d --name hub-adminer -p 5001:8080 adminer");
         });
     
