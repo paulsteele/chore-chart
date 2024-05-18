@@ -3,8 +3,70 @@
 @inject IFinanceViewModel FinanceViewModel
 @implements IDisposable
 
-<h3 class="text-center">Finance</h3>
+<h2 class="text-center p-3">Finance</h2>
 
+<div class="d-sm-flex">
+	<div class="flex-grow-1 px-3 text-center">
+		<div class="card p-3">
+			<div class="d-flex justify-content-between">
+				<h1>Balance: @FinanceViewModel.Balance</h1>
+				<h1>Free To Spend: @FinanceViewModel.FreeToSpend</h1>
+			</div>
+		</div>
+	</div>
+	<div class="float-sm-end px-3 text-center">
+		<div class="card">
+			<div class="container text-center p-3">
+				<h3>Categories</h3>
+				<button class="btn btn-primary oi oi-plus" style="width: 45px" @onclick="FinanceViewModel.AddCategory"></button>
+			</div>
+		</div>
+		@if (FinanceViewModel.Categories.Count > 0)
+		{
+		<table class="table table-striped m-0">
+			<tbody>
+			@foreach (var category in FinanceViewModel.Categories)
+			{
+				@if (!category.Editing)
+				{
+					<tr @onclick="() => category.Editing = true">
+						<td>
+							<h5>@category.Name</h5>
+						</td>
+						<td>
+							<h5>@category.Budget</h5>
+						</td>
+						<td>
+							<h5>@category.Budget</h5>
+						</td>
+					</tr>
+				}
+				else
+				{
+					<tr @onblur="() => category.Editing = false">
+						<td>
+							<input type="text" @bind-value=@category.Name/>
+						</td>
+						<td>
+							<input type="number" @bind-value=@category.Budget step="1" min="0" max="10000"/>
+						</td>
+						<td>
+							<button class="btn btn-success oi oi-check" style="width: 45px" @onclick="() => FinanceViewModel.SaveCategory(category)"></button>
+						</td>
+						<td>
+							<button class="btn btn-warning oi oi-action-undo" style="width: 45px" @onclick="() => FinanceViewModel.CancelEditingCategory(category)"></button>
+						</td>
+						<td>
+							<button class="btn btn-danger oi oi-x" style="width: 45px" @onclick="() => FinanceViewModel.DeleteCategory(category)"></button>
+						</td>
+					</tr>
+				}
+			}
+			</tbody>
+		</table>
+		}
+	</div>
+</div>
 @code
 {
 	protected override void OnInitialized()

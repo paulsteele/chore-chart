@@ -51,6 +51,10 @@ public class DatabaseContext(EnvironmentVariableConfiguration configuration) : I
 		builder.Entity<Category>()
 			.Property(nameof(Category.Color))
 			.HasConversion<ColorValueConverter>();
+
+		builder.Entity<Category>()
+			.Property(nameof(Category.Budget))
+			.HasPrecision(10, 0);
 	}
 }
 

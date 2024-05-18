@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using hub.Server.Database;
-using hub.Server.NativeBle;
-using hub.Shared.Models.Bluetooth;
 using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,15 +24,28 @@ public class FinanceController(
 
 	[HttpPut]
 	[Route("category")]
-	public async Task<ActionResult> AddCategory([FromBody] Category category)
+	public async Task<ActionResult<Category>> AddCategory([FromBody] Category category)
 	{
 		database.Categories.Add(category);
 		await database.SaveChangesAsync();
-		return Ok();
+		return Ok(category);
 	}
 	
+	[HttpGet]
+	[Route("category/{id:int}")]
+	public ActionResult GetCategory([FromRoute]int id)
+	{
+		var category = database.Categories.FirstOrDefault(c => c.Id == id);
+
+		if (category == null)
+		{
+			return NotFound(id);
+		}
+
+		return Ok(category);
+	}
 	[HttpPut]
-	[Route("category/{id}")]
+	[Route("category/{id:int}")]
 	public async Task<ActionResult> AddCategory([FromRoute]int id, [FromBody] Category bodyCategory)
 	{
 		var category = database.Categories.FirstOrDefault(c => c.Id == id);
@@ -54,7 +65,7 @@ public class FinanceController(
 	}
 	
 	[HttpDelete]
-	[Route("category/{id}")]
+	[Route("category/{id:int}")]
 	public async Task<IActionResult> GetCategories([FromRoute]int id)
 	{
 		var category = database.Categories.FirstOrDefault(c => c.Id == id);
