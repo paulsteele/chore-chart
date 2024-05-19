@@ -103,7 +103,7 @@ public class FinanceViewModel(
 	
 	public async Task Import(InputFileChangeEventArgs args)
 	{
-		var stream = new StreamReader(args.File.OpenReadStream());
+		using var stream = new StreamReader(args.File.OpenReadStream());
 
 		var list = new List<string>();
 		var keepReading = true;

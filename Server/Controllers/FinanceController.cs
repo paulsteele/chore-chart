@@ -5,7 +5,6 @@ using hub.Server.Database;
 using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic.FileIO;
 
 namespace hub.Server.Controllers;
 
@@ -93,6 +92,9 @@ public class FinanceController(
 	[Route("import")]
 	public ActionResult Import([FromBody] List<string> fileContents)
 	{
+		var parsed = fileContents.Select(Transaction.TryParse).Where(t => t.transaction != null).ToList();
+
+		var transactions = parsed.Select(t => t.transaction).ToList();
 		return Ok();
 	}
 }
