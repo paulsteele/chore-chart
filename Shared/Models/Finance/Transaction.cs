@@ -44,7 +44,7 @@ public class Transaction
 			new Transaction
 			{
 				Amount = amount,
-				Description = items[2],
+				Description = items[2].Length > 128 ? items[2][..128] : items[2],
 				PostingDate = time
 			},
 			balance

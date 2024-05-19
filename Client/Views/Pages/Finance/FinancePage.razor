@@ -18,8 +18,30 @@
 				<h3 class="px-3">Import: </h3>
 				<InputFile class="flex-grow-1 px-3" OnChange="FinanceViewModel.Import">Import</InputFile>
 			</div>
-			<tbody>
-			</tbody>
+			@if (FinanceViewModel.Transactions.Count > 0)
+			{
+				<table class="table table-striped m-0">
+					<tbody>
+						@foreach (var transaction in FinanceViewModel.Transactions)
+						{
+							<tr>
+								<td>
+									<h3>@transaction.PostingDate.ToShortDateString()</h3>
+								</td>
+								<td>
+									<h3>@transaction.Description</h3>
+								</td>
+								<td>
+									<h3>@transaction.Amount</h3>
+								</td>
+								<td>
+									<h3>@transaction.Category</h3>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
 		</div>
 	</div>
 	<div class="float-sm-end px-3 text-center">

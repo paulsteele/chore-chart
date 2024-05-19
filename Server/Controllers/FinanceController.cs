@@ -85,16 +85,34 @@ public class FinanceController(
 	[Route("transactions")]
 	public ActionResult<IList<Category>> GetTransactions()
 	{
-		return Ok(database.Transactions.OrderBy(c => c.PostingDate).ToList());
+		return Ok(database.Transactions.OrderByDescending(c => c.PostingDate).ToList());
 	}
 	
 	[HttpPost]
 	[Route("import")]
-	public ActionResult Import([FromBody] List<string> fileContents)
+	public async Task<ActionResult> Import([FromBody] List<string> fileContents)
 	{
 		var parsed = fileContents.Select(Transaction.TryParse).Where(t => t.transaction != null).ToList();
 
-		var transactions = parsed.Select(t => t.transaction).ToList();
+		if (parsed.Count == 0)
+		{
+			return NoContent();
+		}
+
+		var balance = parsed.First().balance;
+
+		var addable = parsed
+			.Select(t => t.transaction)
+			.Where(transaction => !database.Transactions
+				.Any(t =>
+					t.PostingDate.Equals(transaction.PostingDate) && t.Description.Equals(transaction.Description)
+				)
+			)
+			.Reverse();
+		
+		database.Transactions.AddRange(addable);
+		await database.SaveChangesAsync();
+
 		return Ok();
 	}
 }

@@ -23,8 +23,9 @@ public interface IFinanceViewModel : INotifyStateChanged
 	Task SaveCategory(Category category);
 	Task CancelEditingCategory(Category category);
 	Task DeleteCategory(Category category);
-	List<Category> Categories { get; }
 	Task Import(InputFileChangeEventArgs args);
+	List<Category> Categories { get; }
+	List<Transaction> Transactions { get; }
 }
 
 public class FinanceViewModel(
@@ -34,15 +35,18 @@ public class FinanceViewModel(
 ) : BaseNotifyStateChanged, IFinanceViewModel
 {
 	public List<Category> Categories { get; } = [];
+	public List<Transaction> Transactions { get; } = [];
 
 	public async Task Initialize()
 	{
 		await loadingService.WithLoading(async () =>
 		{
 			await httpClient.Init();
-			var categories = (await httpClient.GetFromJsonAsync<List<Category>>("finance/categories")).OrderBy(c => c.Order);
+			var categories = await httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
+			var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>("finance/transactions");
 			
 			Categories.AddRange(categories);
+			Transactions.AddRange(transactions);
 			NotifyStateChanged();
 		});
 	}
@@ -103,24 +107,32 @@ public class FinanceViewModel(
 	
 	public async Task Import(InputFileChangeEventArgs args)
 	{
-		using var stream = new StreamReader(args.File.OpenReadStream());
-
-		var list = new List<string>();
-		var keepReading = true;
-
-		while (keepReading)
+		await loadingService.WithLoading(async () =>
 		{
-			var value = await stream.ReadLineAsync();
-			if (value != null)
+			using var stream = new StreamReader(args.File.OpenReadStream());
+
+			var list = new List<string>();
+			var keepReading = true;
+
+			while (keepReading)
 			{
-				list.Add(value);
+				var value = await stream.ReadLineAsync();
+				if (value != null)
+				{
+					list.Add(value);
+				}
+				else
+				{
+					keepReading = false;
+				}
 			}
-			else
-			{
-				keepReading = false;
-			}
-		}
-		
-		await httpClient.PostAsJsonAsync("finance/import", list);
+			
+			await httpClient.PostAsJsonAsync("finance/import", list);
+			var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>("finance/transactions");
+			
+			Transactions.Clear();
+			Transactions.AddRange(transactions);
+			NotifyStateChanged();
+		});
 	}
 }
