@@ -60,6 +60,10 @@ public class DatabaseContext(EnvironmentVariableConfiguration configuration) : I
 		builder.Entity<Transaction>()
 			.Property(nameof(Transaction.Amount))
 			.HasPrecision(12, 2);
+		
+		builder.Entity<Transaction>()
+			.Property(nameof(Transaction.Balance))
+			.HasPrecision(12, 2);
 	}
 }
 

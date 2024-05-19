@@ -92,17 +92,14 @@ public class FinanceController(
 	[Route("import")]
 	public async Task<ActionResult> Import([FromBody] List<string> fileContents)
 	{
-		var parsed = fileContents.Select(Transaction.TryParse).Where(t => t.transaction != null).ToList();
+		var parsed = fileContents.Select(Transaction.TryParse).Where(t => t != null).ToList();
 
 		if (parsed.Count == 0)
 		{
 			return NoContent();
 		}
 
-		var balance = parsed.First().balance;
-
 		var addable = parsed
-			.Select(t => t.transaction)
 			.Where(transaction => !database.Transactions
 				.Any(t =>
 					t.PostingDate.Equals(transaction.PostingDate) && t.Description.Equals(transaction.Description)

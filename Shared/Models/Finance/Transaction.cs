@@ -14,40 +14,40 @@ public class Transaction
 	[MaxLength(128)]
 	public string Description { get; set; }
 	public decimal Amount { get; set; }
+	public decimal Balance { get; set; }
 	public Category Category { get; set; }
 
-	public static (Transaction transaction, decimal balance) TryParse(string line)
+	public static Transaction TryParse(string line)
 	{
 		var items = line.Split(',');
 
 		if (items.Length != 8)
 		{
-			return (null, decimal.MinValue);
+			return null;
 		}
 
 		if (!DateTime.TryParse(items[1], out var time))
 		{
-			return (null, decimal.MinValue);
+			return null;
 		}
 
 		if (!decimal.TryParse(items[3], out var amount))
 		{
-			return (null, decimal.MinValue);
+			return null;
 		}
 		
 		if (!decimal.TryParse(items[5], out var balance))
 		{
-			return (null, decimal.MinValue);
+			return null;
 		}
 
-		return (
-			new Transaction
+		return new Transaction
 			{
 				Amount = amount,
 				Description = items[2].Length > 128 ? items[2][..128] : items[2],
-				PostingDate = time
-			},
-			balance
-		);
+				PostingDate = time,
+				Balance = balance
+			}
+		;
 	}
 }
