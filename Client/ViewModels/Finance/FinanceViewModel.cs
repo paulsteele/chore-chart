@@ -5,10 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Web;
 using hub.Client.Services.Loading;
 using hub.Client.Services.Web;
 using hub.Shared.Bases;
 using hub.Shared.Models.Finance;
+using hub.Shared.Tools;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
@@ -26,16 +28,42 @@ public interface IFinanceViewModel : INotifyStateChanged
 	Task Import(InputFileChangeEventArgs args);
 	List<Category> Categories { get; }
 	List<Transaction> Transactions { get; }
+	bool OnlyDisplayMonth { get; set; }
+	bool OnlyDisplayUncategorized { get; set; }
+	Task Refresh();
 }
 
 public class FinanceViewModel(
 	AuthedHttpClient httpClient,
 	ILoadingService loadingService,
+	INowTimeProvider nowTimeProvider,
 	ILogger logger
 ) : BaseNotifyStateChanged, IFinanceViewModel
 {
 	public List<Category> Categories { get; } = [];
 	public List<Transaction> Transactions { get; } = [];
+	private bool _onlyDisplayMonth = true;
+	private bool _onlyDisplayUncategorized = true;
+
+	public bool OnlyDisplayMonth
+	{
+		get => _onlyDisplayMonth;
+		set
+		{
+			_onlyDisplayMonth = value;
+			Refresh();
+		}
+	}
+
+	public bool OnlyDisplayUncategorized
+	{
+		get => _onlyDisplayUncategorized;
+		set
+		{
+			_onlyDisplayUncategorized = value;
+			Refresh();
+		}
+	}
 
 	public async Task Initialize()
 	{
@@ -43,7 +71,7 @@ public class FinanceViewModel(
 		{
 			await httpClient.Init();
 			var categories = await httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
-			var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>("finance/transactions");
+			var transactions = await GetTransactions();
 			
 			Categories.AddRange(categories);
 			Transactions.AddRange(transactions);
@@ -128,11 +156,46 @@ public class FinanceViewModel(
 			}
 			
 			await httpClient.PostAsJsonAsync("finance/import", list);
-			var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>("finance/transactions");
+			var transactions = await GetTransactions();
 			
 			Transactions.Clear();
 			Transactions.AddRange(transactions);
 			NotifyStateChanged();
 		});
+	}
+	
+	public async Task Refresh()
+	{
+		await loadingService.WithLoading(async () =>
+		{
+			var transactions = await GetTransactions();
+			
+			Transactions.Clear();
+			Transactions.AddRange(transactions);
+			NotifyStateChanged();
+		});
+	}
+
+	private async Task<List<Transaction>> GetTransactions()
+	{
+
+		var queryString = HttpUtility.ParseQueryString(string.Empty);
+
+		if (_onlyDisplayMonth)
+		{
+			var now = nowTimeProvider.Now;
+
+			queryString.Add("month", now.Month.ToString());
+			queryString.Add("year", now.Year.ToString());
+		}
+
+		if (_onlyDisplayUncategorized)
+		{
+			queryString.Add("onlyUncategorized", "true");
+		}
+		
+		var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>($"finance/transactions?{queryString}");
+
+		return transactions;
 	}
 }

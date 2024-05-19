@@ -83,9 +83,24 @@ public class FinanceController(
 	
 	[HttpGet]
 	[Route("transactions")]
-	public ActionResult<IList<Category>> GetTransactions()
+	public ActionResult<IList<Category>> GetTransactions([FromQuery] int? month, [FromQuery] int? year, [FromQuery] bool? onlyUncategorized)
 	{
-		return Ok(database.Transactions.OrderByDescending(c => c.PostingDate).ToList());
+		IQueryable<Transaction> query = database.Transactions.OrderByDescending(c => c.PostingDate);
+
+		if (month.HasValue && year.HasValue)
+		{
+			query = query.Where(t =>
+				t.PostingDate.Year == year &&
+				t.PostingDate.Month == month 
+			);
+		}
+
+		if (onlyUncategorized.HasValue && onlyUncategorized.Value)
+		{
+			query = query.Where(t => t.Category == null);
+		}
+		
+		return Ok(query);
 	}
 	
 	[HttpPost]
