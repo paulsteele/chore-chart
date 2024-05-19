@@ -72,14 +72,16 @@ public class FinanceViewModel(
 			await httpClient.Init();
 			var categories = await httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
 			var transactions = await GetTransactions();
+			await SetBalance();
 			
 			Categories.AddRange(categories);
 			Transactions.AddRange(transactions);
+			
 			NotifyStateChanged();
 		});
 	}
 
-	public string Balance => "$xxxx.xx";
+	public string Balance { get; private set; }
 	public string FreeToSpend => "$xxx.xx";
 	public async Task AddCategory()
 	{
@@ -160,6 +162,8 @@ public class FinanceViewModel(
 			
 			Transactions.Clear();
 			Transactions.AddRange(transactions);
+			await SetBalance();
+			
 			NotifyStateChanged();
 		});
 	}
@@ -197,5 +201,12 @@ public class FinanceViewModel(
 		var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>($"finance/transactions?{queryString}");
 
 		return transactions;
+	}
+
+	private async Task SetBalance()
+	{
+		var balance = await httpClient.GetFromJsonAsync<decimal>("finance/balance");
+
+		Balance = $"{balance:C}";
 	}
 }

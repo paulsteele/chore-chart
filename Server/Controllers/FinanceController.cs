@@ -103,6 +103,15 @@ public class FinanceController(
 		return Ok(query);
 	}
 	
+	[HttpGet]
+	[Route("balance")]
+	public ActionResult<decimal> GetBalance()
+	{
+		var latestTransaction = database.Transactions.OrderByDescending(c => c.PostingDate).FirstOrDefault();
+		
+		return Ok(latestTransaction?.Balance ?? 0m);
+	}
+	
 	[HttpPost]
 	[Route("import")]
 	public async Task<ActionResult> Import([FromBody] List<string> fileContents)
