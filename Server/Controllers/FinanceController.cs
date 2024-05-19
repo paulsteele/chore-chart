@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using hub.Server.Database;
 using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace hub.Server.Controllers;
@@ -99,8 +100,30 @@ public class FinanceController(
 		{
 			query = query.Where(t => t.Category == null);
 		}
+		else
+		{
+			query = query.Include(t => t.Category);
+		}
 		
 		return Ok(query);
+	}
+
+	[HttpPut]
+	[Route("transaction/{id:int}")]
+	public async Task<ActionResult> SetTransactionCategory([FromRoute]int id, [FromBody] Category categoryBody)
+	{
+		var transaction = database.Transactions.FirstOrDefault(c => c.Id == id);
+		var category = database.Categories.FirstOrDefault(c => c.Id == categoryBody.Id);
+
+		if (transaction == null)
+		{
+			return NotFound();
+		}
+
+		transaction.Category = category;
+		
+		await database.SaveChangesAsync();
+		return Ok();
 	}
 	
 	[HttpGet]

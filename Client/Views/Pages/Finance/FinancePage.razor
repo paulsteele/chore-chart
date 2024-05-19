@@ -41,7 +41,13 @@
 									<h3>@transaction.Amount</h3>
 								</td>
 								<td>
-									<h3>@transaction.Category</h3>
+									<select @onchange="args => FinanceViewModel.ChangeTransactionCategory(transaction, args.Value)">
+										<option value="-1" selected="@(transaction.Category == null)">Empty</option>
+										@foreach (var category in FinanceViewModel.Categories)
+										{
+											<option value="@category.Id" selected="@(transaction.Category?.Id == category.Id)">@category.Name</option>
+										}
+									</select>
 								</td>
 							</tr>
 						}

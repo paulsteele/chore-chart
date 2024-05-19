@@ -30,7 +30,7 @@ public interface IFinanceViewModel : INotifyStateChanged
 	List<Transaction> Transactions { get; }
 	bool OnlyDisplayMonth { get; set; }
 	bool OnlyDisplayUncategorized { get; set; }
-	Task Refresh();
+	Task ChangeTransactionCategory(Transaction transaction, object categoryId);
 }
 
 public class FinanceViewModel(
@@ -109,6 +109,8 @@ public class FinanceViewModel(
 		{
 			Categories.Remove(category);
 		}
+
+		await Refresh();
 	}
 	
 	public async Task SaveCategory(Category category)
@@ -168,7 +170,7 @@ public class FinanceViewModel(
 		});
 	}
 	
-	public async Task Refresh()
+	private async Task Refresh()
 	{
 		await loadingService.WithLoading(async () =>
 		{
@@ -178,6 +180,25 @@ public class FinanceViewModel(
 			Transactions.AddRange(transactions);
 			NotifyStateChanged();
 		});
+	}
+
+	public async Task ChangeTransactionCategory(Transaction transaction, object categoryIdObject)
+	{
+		if (categoryIdObject is not string categoryString)
+		{
+			return;
+		}
+
+		if (!int.TryParse(categoryString, out var categoryId))
+		{
+			return;
+		}
+		
+		var category = Categories.FirstOrDefault(c => c.Id == categoryId);
+
+		await httpClient.PutAsJsonAsync($"finance/transaction/{transaction.Id}", category);
+
+		transaction.Category = category;
 	}
 
 	private async Task<List<Transaction>> GetTransactions()
