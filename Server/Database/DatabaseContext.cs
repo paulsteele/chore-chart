@@ -11,6 +11,7 @@ namespace hub.Server.Database;
 public class DatabaseContext(EnvironmentVariableConfiguration configuration) : IdentityDbContext {
 	
 	public DbSet<Category> Categories { get; set; }
+	public DbSet<Transaction> Transactions { get; set; }
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		var connectionString = $"Server={configuration.DatabaseUrl};Port={configuration.DatabasePort};Database={configuration.DatabaseName};Uid={configuration.DatabaseUser};Pwd={configuration.DatabasePassword};";
@@ -55,6 +56,10 @@ public class DatabaseContext(EnvironmentVariableConfiguration configuration) : I
 		builder.Entity<Category>()
 			.Property(nameof(Category.Budget))
 			.HasPrecision(10, 0);
+		
+		builder.Entity<Transaction>()
+			.Property(nameof(Transaction.Amount))
+			.HasPrecision(12, 2);
 	}
 }
 

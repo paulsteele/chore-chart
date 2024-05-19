@@ -5,6 +5,7 @@ using hub.Server.Database;
 using hub.Shared.Models.Finance;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.FileIO;
 
 namespace hub.Server.Controllers;
 
@@ -17,9 +18,9 @@ public class FinanceController(
 
 	[HttpGet]
 	[Route("categories")]
-	public IList<Category> GetCategories()
+	public ActionResult<IList<Category>> GetCategories()
 	{
-		return database.Categories.OrderBy(c => c.Order).ToList();
+		return Ok(database.Categories.OrderBy(c => c.Order).ToList());
 	}
 
 	[HttpPut]
@@ -78,6 +79,20 @@ public class FinanceController(
 		database.Categories.Remove(category);
 		
 		await database.SaveChangesAsync();
+		return Ok();
+	}
+	
+	[HttpGet]
+	[Route("transactions")]
+	public ActionResult<IList<Category>> GetTransactions()
+	{
+		return Ok(database.Transactions.OrderBy(c => c.PostingDate).ToList());
+	}
+	
+	[HttpPost]
+	[Route("import")]
+	public ActionResult Import([FromBody] List<string> fileContents)
+	{
 		return Ok();
 	}
 }

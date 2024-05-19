@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using hub.Client.Services.Loading;
 using hub.Client.Services.Web;
 using hub.Shared.Bases;
 using hub.Shared.Models.Finance;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 
 namespace hub.Client.ViewModels.Finance;
@@ -22,6 +24,7 @@ public interface IFinanceViewModel : INotifyStateChanged
 	Task CancelEditingCategory(Category category);
 	Task DeleteCategory(Category category);
 	List<Category> Categories { get; }
+	Task Import(InputFileChangeEventArgs args);
 }
 
 public class FinanceViewModel(
@@ -96,5 +99,28 @@ public class FinanceViewModel(
 		Categories.Remove(category);
 		Categories.Add(result);
 		Categories.Sort((a,b) => a.Order - b.Order);
+	}
+	
+	public async Task Import(InputFileChangeEventArgs args)
+	{
+		var stream = new StreamReader(args.File.OpenReadStream());
+
+		var list = new List<string>();
+		var keepReading = true;
+
+		while (keepReading)
+		{
+			var value = await stream.ReadLineAsync();
+			if (value != null)
+			{
+				list.Add(value);
+			}
+			else
+			{
+				keepReading = false;
+			}
+		}
+		
+		await httpClient.PostAsJsonAsync("finance/import", list);
 	}
 }
