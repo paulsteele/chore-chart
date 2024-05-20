@@ -14,7 +14,7 @@ public class Transaction
 	[MaxLength(128)]
 	public string Description { get; set; }
 	public decimal Amount { get; set; }
-	public decimal Balance { get; set; }
+	public decimal? Balance { get; set; }
 	[DeleteBehavior(DeleteBehavior.SetNull)]
 	public Category Category { get; set; }
 
