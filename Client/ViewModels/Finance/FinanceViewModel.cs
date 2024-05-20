@@ -32,6 +32,7 @@ public interface IFinanceViewModel : INotifyStateChanged
 	bool OnlyDisplayMonth { get; set; }
 	bool OnlyDisplayUncategorized { get; set; }
 	Task ChangeTransactionCategory(Transaction transaction, object categoryId);
+	Task ToggleHideTransaction(Transaction transaction);
 	string GetBalanceForCategory(Category category);
 	DateTime SelectedDate { get; set; } 
 }
@@ -224,6 +225,12 @@ public class FinanceViewModel : BaseNotifyStateChanged, IFinanceViewModel
 		transaction.Category = category;
 
 		await UpdateBalance();
+	}
+
+	public async Task ToggleHideTransaction(Transaction transaction)
+	{
+		await _httpClient.PutAsync($"finance/transaction/toggleHidden/{transaction.Id}", null);
+		transaction.Hidden = !transaction.Hidden;
 	}
 
 	public string GetBalanceForCategory(Category category)

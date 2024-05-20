@@ -98,7 +98,7 @@ public class FinanceController(
 
 		if (onlyUncategorized.HasValue && onlyUncategorized.Value)
 		{
-			query = query.Where(t => t.Category == null);
+			query = query.Where(t => t.Category == null && !t.Hidden);
 		}
 		else
 		{
@@ -121,6 +121,23 @@ public class FinanceController(
 		}
 
 		transaction.Category = category;
+		
+		await database.SaveChangesAsync();
+		return Ok();
+	}
+	
+	[HttpPut]
+	[Route("transaction/toggleHidden/{id:int}")]
+	public async Task<ActionResult> ToggleTransactionHide([FromRoute]int id)
+	{
+		var transaction = database.Transactions.FirstOrDefault(c => c.Id == id);
+
+		if (transaction == null)
+		{
+			return NotFound();
+		}
+
+		transaction.Hidden = !transaction.Hidden;
 		
 		await database.SaveChangesAsync();
 		return Ok();

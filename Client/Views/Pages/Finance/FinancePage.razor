@@ -53,6 +53,9 @@
 										}
 									</select>
 								</td>
+								<td>
+									<button class="btn btn-warning" @onclick="() => FinanceViewModel.ToggleHideTransaction(transaction)">@(transaction.Hidden ? "Show" : "Hide")</button>
+								</td>
 							</tr>
 						}
 					</tbody>

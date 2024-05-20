@@ -17,6 +17,7 @@ public class Transaction
 	public decimal? Balance { get; set; }
 	[DeleteBehavior(DeleteBehavior.SetNull)]
 	public Category Category { get; set; }
+	public bool Hidden { get; set; }
 
 	public static Transaction TryParse(string line)
 	{
