@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -32,20 +33,29 @@ public interface IFinanceViewModel : INotifyStateChanged
 	bool OnlyDisplayUncategorized { get; set; }
 	Task ChangeTransactionCategory(Transaction transaction, object categoryId);
 	string GetBalanceForCategory(Category category);
+	DateTime SelectedDate { get; set; } 
 }
 
-public class FinanceViewModel(
-	AuthedHttpClient httpClient,
-	ILoadingService loadingService,
-	INowTimeProvider nowTimeProvider,
-	ILogger logger
-) : BaseNotifyStateChanged, IFinanceViewModel
+public class FinanceViewModel : BaseNotifyStateChanged, IFinanceViewModel
 {
 	public List<Category> Categories { get; } = [];
 	public List<Transaction> Transactions { get; } = [];
 	private bool _onlyDisplayMonth = true;
 	private bool _onlyDisplayUncategorized = true;
 	private Balance? _balance;
+	private DateTime _selectedDate;
+	private readonly AuthedHttpClient _httpClient;
+	private readonly ILoadingService _loadingService;
+
+	public FinanceViewModel(AuthedHttpClient httpClient,
+		ILoadingService loadingService,
+		INowTimeProvider nowTimeProvider,
+		ILogger logger)
+	{
+		_httpClient = httpClient;
+		_loadingService = loadingService;
+		_selectedDate = nowTimeProvider.Now;
+	}
 
 	public bool OnlyDisplayMonth
 	{
@@ -67,12 +77,23 @@ public class FinanceViewModel(
 		}
 	}
 
+	public DateTime SelectedDate
+	{
+		get => _selectedDate;
+		set
+		{
+			_selectedDate = value;
+			Refresh();
+			UpdateBalance();
+		}
+	}
+
 	public async Task Initialize()
 	{
-		await loadingService.WithLoading(async () =>
+		await _loadingService.WithLoading(async () =>
 		{
-			await httpClient.Init();
-			var categories = await httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
+			await _httpClient.Init();
+			var categories = await _httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
 			var transactions = await GetTransactions();
 			await UpdateBalance();
 			
@@ -84,7 +105,7 @@ public class FinanceViewModel(
 	}
 
 	public string Balance => $"{_balance?.Total:C}";
-	public string FreeToSpend => "$xxx.xx";
+	public string FreeToSpend => $"{_balance?.LeftToSpend:C}";
 	public async Task AddCategory()
 	{
 		var newCategory = new Category
@@ -96,7 +117,7 @@ public class FinanceViewModel(
 			Order = Categories.Count
 		};
 
-		var result = await httpClient.PutAsJsonAsync("finance/category", newCategory);
+		var result = await _httpClient.PutAsJsonAsync("finance/category", newCategory);
 		var responseCategory = await result.Content.ReadFromJsonAsync<Category>();
 		
 		Categories.Add(responseCategory);
@@ -105,7 +126,7 @@ public class FinanceViewModel(
 	public async Task DeleteCategory(Category category)
 	{
 
-		var result = await httpClient.DeleteAsync($"finance/category/{category.Id}");
+		var result = await _httpClient.DeleteAsync($"finance/category/{category.Id}");
 
 		if (result.IsSuccessStatusCode)
 		{
@@ -117,7 +138,7 @@ public class FinanceViewModel(
 	
 	public async Task SaveCategory(Category category)
 	{
-		var result = await httpClient.PutAsJsonAsync($"finance/category/{category.Id}", category);
+		var result = await _httpClient.PutAsJsonAsync($"finance/category/{category.Id}", category);
 
 		if (result.IsSuccessStatusCode)
 		{
@@ -127,7 +148,7 @@ public class FinanceViewModel(
 	
 	public async Task CancelEditingCategory(Category category)
 	{
-		var result = await httpClient.GetFromJsonAsync<Category>($"finance/category/{category.Id}");
+		var result = await _httpClient.GetFromJsonAsync<Category>($"finance/category/{category.Id}");
 
 		if (result == null)
 		{
@@ -141,7 +162,7 @@ public class FinanceViewModel(
 	
 	public async Task Import(InputFileChangeEventArgs args)
 	{
-		await loadingService.WithLoading(async () =>
+		await _loadingService.WithLoading(async () =>
 		{
 			using var stream = new StreamReader(args.File.OpenReadStream());
 
@@ -161,7 +182,7 @@ public class FinanceViewModel(
 				}
 			}
 			
-			await httpClient.PostAsJsonAsync("finance/import", list);
+			await _httpClient.PostAsJsonAsync("finance/import", list);
 			var transactions = await GetTransactions();
 			
 			Transactions.Clear();
@@ -174,7 +195,7 @@ public class FinanceViewModel(
 	
 	private async Task Refresh()
 	{
-		await loadingService.WithLoading(async () =>
+		await _loadingService.WithLoading(async () =>
 		{
 			var transactions = await GetTransactions();
 			
@@ -198,7 +219,7 @@ public class FinanceViewModel(
 		
 		var category = Categories.FirstOrDefault(c => c.Id == categoryId);
 
-		await httpClient.PutAsJsonAsync($"finance/transaction/{transaction.Id}", category);
+		await _httpClient.PutAsJsonAsync($"finance/transaction/{transaction.Id}", category);
 
 		transaction.Category = category;
 
@@ -215,6 +236,7 @@ public class FinanceViewModel(
 		return $"{category.Budget + spend:C}";
 	}
 
+
 	private async Task<List<Transaction>> GetTransactions()
 	{
 
@@ -222,10 +244,8 @@ public class FinanceViewModel(
 
 		if (_onlyDisplayMonth)
 		{
-			var now = nowTimeProvider.Now;
-
-			queryString.Add("month", now.Month.ToString());
-			queryString.Add("year", now.Year.ToString());
+			queryString.Add("month", _selectedDate.Month.ToString());
+			queryString.Add("year", _selectedDate.Year.ToString());
 		}
 
 		if (_onlyDisplayUncategorized)
@@ -233,16 +253,14 @@ public class FinanceViewModel(
 			queryString.Add("onlyUncategorized", "true");
 		}
 		
-		var transactions = await httpClient.GetFromJsonAsync<List<Transaction>>($"finance/transactions?{queryString}");
+		var transactions = await _httpClient.GetFromJsonAsync<List<Transaction>>($"finance/transactions?{queryString}");
 
 		return transactions;
 	}
 
 	private async Task UpdateBalance()
 	{
-		var now = nowTimeProvider.Now;
-
-		_balance = await httpClient.GetFromJsonAsync<Balance>($"finance/balance?year={now.Year}&month={now.Month}");
+		_balance = await _httpClient.GetFromJsonAsync<Balance>($"finance/balance?year={_selectedDate.Year}&month={_selectedDate.Month}");
 
 		NotifyStateChanged();
 	}

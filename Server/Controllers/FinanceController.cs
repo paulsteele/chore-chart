@@ -136,8 +136,11 @@ public class FinanceController(
 			.Where(t => t.PostingDate.Year == year && t.PostingDate.Month == month)
 			.Include(t => t.Category)
 			.GroupBy(t => t.Category).ToList();
+		
+		var budgetTotal = database.Categories.Sum(c => c.Budget);
 
 		var categorySpend = new Dictionary<int, decimal>();
+		var totalSpend = 0m;
 
 		foreach (var grouping in allTransactions)
 		{
@@ -148,9 +151,10 @@ public class FinanceController(
 			var spend = grouping.Sum(transaction => transaction.Amount);
 
 			categorySpend.Add(grouping.Key.Id, spend);
+			totalSpend += spend;
 		}
 
-		var balance = new Balance(latestTransaction?.Balance ?? 0m, categorySpend);
+		var balance = new Balance(latestTransaction?.Balance ?? 0m, budgetTotal + totalSpend, categorySpend);
 		
 		return Ok(balance);
 	}
