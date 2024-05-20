@@ -130,7 +130,7 @@ public class FinanceController(
 	[Route("balance")]
 	public ActionResult<Balance> GetBalance([FromQuery] int month, [FromQuery] int year)
 	{
-		var latestTransaction = database.Transactions.OrderByDescending(c => c.PostingDate).FirstOrDefault();
+		var latestTransaction = database.Transactions.OrderByDescending(c => c.PostingDate).FirstOrDefault(c => c.Balance.HasValue);
 
 		var allTransactions = database.Transactions
 			.Where(t => t.PostingDate.Year == year && t.PostingDate.Month == month)

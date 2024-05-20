@@ -20,6 +20,13 @@ public class Transaction
 
 	public static Transaction TryParse(string line)
 	{
+		var debitValue = TryParseDebit(line);
+
+		return debitValue ?? TryParseCredit(line);
+	}
+	
+	private static Transaction TryParseDebit(string line)
+	{
 		var items = line.Split(',');
 
 		if (items.Length != 8)
@@ -48,6 +55,35 @@ public class Transaction
 				Description = items[2].Length > 128 ? items[2][..128] : items[2],
 				PostingDate = time,
 				Balance = balance
+			}
+		;
+	}
+
+	private static Transaction TryParseCredit(string line)
+	{
+		var items = line.Split(',');
+
+		if (items.Length != 7)
+		{
+			return null;
+		}
+
+		if (!DateTime.TryParse(items[0], out var time))
+		{
+			return null;
+		}
+
+		if (!decimal.TryParse(items[5], out var amount))
+		{
+			return null;
+		}
+
+		return new Transaction
+			{
+				Amount = amount,
+				Description = items[2].Length > 128 ? items[2][..128] : items[2],
+				PostingDate = time,
+				Balance = null
 			}
 		;
 	}
