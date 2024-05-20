@@ -110,10 +110,10 @@ public class FinanceController(
 
 	[HttpPut]
 	[Route("transaction/{id:int}")]
-	public async Task<ActionResult> SetTransactionCategory([FromRoute]int id, [FromBody] Category categoryBody)
+	public async Task<ActionResult> SetTransactionCategory([FromRoute]int id, [FromBody] Category categoryBody = null)
 	{
-		var transaction = database.Transactions.FirstOrDefault(c => c.Id == id);
-		var category = database.Categories.FirstOrDefault(c => c.Id == categoryBody.Id);
+		var transaction = database.Transactions.Include(t => t.Category).FirstOrDefault(c => c.Id == id);
+		var category = categoryBody != null ? database.Categories.FirstOrDefault(c => c.Id == categoryBody.Id) : null;
 
 		if (transaction == null)
 		{
@@ -128,11 +128,31 @@ public class FinanceController(
 	
 	[HttpGet]
 	[Route("balance")]
-	public ActionResult<decimal> GetBalance()
+	public ActionResult<Balance> GetBalance([FromQuery] int month, [FromQuery] int year)
 	{
 		var latestTransaction = database.Transactions.OrderByDescending(c => c.PostingDate).FirstOrDefault();
+
+		var allTransactions = database.Transactions
+			.Where(t => t.PostingDate.Year == year && t.PostingDate.Month == month)
+			.Include(t => t.Category)
+			.GroupBy(t => t.Category).ToList();
+
+		var categorySpend = new Dictionary<int, decimal>();
+
+		foreach (var grouping in allTransactions)
+		{
+			if (grouping.Key == null)
+			{
+				continue;
+			}
+			var spend = grouping.Sum(transaction => transaction.Amount);
+
+			categorySpend.Add(grouping.Key.Id, spend);
+		}
+
+		var balance = new Balance(latestTransaction?.Balance ?? 0m, categorySpend);
 		
-		return Ok(latestTransaction?.Balance ?? 0m);
+		return Ok(balance);
 	}
 	
 	[HttpPost]

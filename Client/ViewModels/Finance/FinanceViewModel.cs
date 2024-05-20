@@ -1,4 +1,4 @@
-using System;
+#nullable enable
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -31,6 +31,7 @@ public interface IFinanceViewModel : INotifyStateChanged
 	bool OnlyDisplayMonth { get; set; }
 	bool OnlyDisplayUncategorized { get; set; }
 	Task ChangeTransactionCategory(Transaction transaction, object categoryId);
+	string GetBalanceForCategory(Category category);
 }
 
 public class FinanceViewModel(
@@ -44,6 +45,7 @@ public class FinanceViewModel(
 	public List<Transaction> Transactions { get; } = [];
 	private bool _onlyDisplayMonth = true;
 	private bool _onlyDisplayUncategorized = true;
+	private Balance? _balance;
 
 	public bool OnlyDisplayMonth
 	{
@@ -72,7 +74,7 @@ public class FinanceViewModel(
 			await httpClient.Init();
 			var categories = await httpClient.GetFromJsonAsync<List<Category>>("finance/categories");
 			var transactions = await GetTransactions();
-			await SetBalance();
+			await UpdateBalance();
 			
 			Categories.AddRange(categories);
 			Transactions.AddRange(transactions);
@@ -81,7 +83,7 @@ public class FinanceViewModel(
 		});
 	}
 
-	public string Balance { get; private set; }
+	public string Balance => $"{_balance?.Total:C}";
 	public string FreeToSpend => "$xxx.xx";
 	public async Task AddCategory()
 	{
@@ -164,7 +166,7 @@ public class FinanceViewModel(
 			
 			Transactions.Clear();
 			Transactions.AddRange(transactions);
-			await SetBalance();
+			await UpdateBalance();
 			
 			NotifyStateChanged();
 		});
@@ -199,6 +201,18 @@ public class FinanceViewModel(
 		await httpClient.PutAsJsonAsync($"finance/transaction/{transaction.Id}", category);
 
 		transaction.Category = category;
+
+		await UpdateBalance();
+	}
+
+	public string GetBalanceForCategory(Category category)
+	{
+		if (_balance == null || !_balance.CategorySpend.TryGetValue(category.Id, out var spend))
+		{
+			return $"{category.Budget:C}";
+		}
+		
+		return $"{category.Budget + spend:C}";
 	}
 
 	private async Task<List<Transaction>> GetTransactions()
@@ -224,10 +238,12 @@ public class FinanceViewModel(
 		return transactions;
 	}
 
-	private async Task SetBalance()
+	private async Task UpdateBalance()
 	{
-		var balance = await httpClient.GetFromJsonAsync<decimal>("finance/balance");
+		var now = nowTimeProvider.Now;
 
-		Balance = $"{balance:C}";
+		_balance = await httpClient.GetFromJsonAsync<Balance>($"finance/balance?year={now.Year}&month={now.Month}");
+
+		NotifyStateChanged();
 	}
 }

@@ -76,10 +76,10 @@
 							<h5>@category.Name</h5>
 						</td>
 						<td>
-							<h5>@category.Budget</h5>
+							<h5>@($"{category.Budget:C}")</h5>
 						</td>
 						<td>
-							<h5>@category.Budget</h5>
+							<h5>@FinanceViewModel.GetBalanceForCategory(category)</h5>
 						</td>
 					</tr>
 				}
