@@ -69,6 +69,10 @@
 				<h3>Categories</h3>
 				<button class="btn btn-primary oi oi-plus" style="width: 45px" @onclick="FinanceViewModel.AddCategory"></button>
 			</div>
+			<div container text-center p-3>
+				<label for="allowEditing">Allow Editing:</label>
+				<input id="allowEditing" type="checkbox" @bind="FinanceViewModel.AllowCategoryEditing"/>
+			</div>
 		</div>
 		@if (FinanceViewModel.Categories.Count > 0)
 		{
@@ -78,7 +82,7 @@
 			{
 				@if (!category.Editing)
 				{
-					<tr @onclick="() => category.Editing = true">
+					<tr @onclick="() => { if (FinanceViewModel.AllowCategoryEditing) { category.Editing = true; } }">
 						<td>
 							<h5>@category.Name</h5>
 						</td>

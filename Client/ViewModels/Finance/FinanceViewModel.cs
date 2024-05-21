@@ -35,6 +35,7 @@ public interface IFinanceViewModel : INotifyStateChanged
 	Task ToggleHideTransaction(Transaction transaction);
 	string GetBalanceForCategory(Category category);
 	DateTime SelectedDate { get; set; } 
+	bool AllowCategoryEditing { get; set; }
 }
 
 public class FinanceViewModel : BaseNotifyStateChanged, IFinanceViewModel
@@ -88,6 +89,8 @@ public class FinanceViewModel : BaseNotifyStateChanged, IFinanceViewModel
 			UpdateBalance();
 		}
 	}
+
+	public bool AllowCategoryEditing { get; set; }
 
 	public async Task Initialize()
 	{
