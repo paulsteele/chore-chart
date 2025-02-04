@@ -29,7 +29,7 @@ namespace hub.Client.ViewModels.Countdown
         private Timer _timer;
 
         private CountdownModel _christmasCountdown;
-        private CountdownModel _finalFantasyCountdown;
+        private CountdownModel _nextGameCountdown;
 
         public CountdownViewModel(IJSRuntime jsRuntime, INowTimeProvider nowTimeProvider)
         {
@@ -56,18 +56,18 @@ namespace hub.Client.ViewModels.Countdown
                 nowTimeProvider
             );
             
-            _finalFantasyCountdown = new CountdownModel(
-                "Dawntrail Early Access",
-                new DateTime(2024, 6, 28, 6, 0, 0, 0), 
-                "assets/countdown/dawntrail.png", 
-                "https://finalfantasy.fandom.com/wiki/Final_Fantasy_XIV:_Dawntrail",
-                "assets/countdown/dawntrail.mp3",
-                "https://www.youtube.com/watch?v=lvRAmjuFSeI",
-                "assets/countdown/dawntrailbg.png",
-                "https://wall.alphacoders.com/big.php?i=1342074",
+            _nextGameCountdown = new CountdownModel(
+                "Monster Hunter Wilds",
+                new DateTime(2025, 2, 28, 5, 0, 0, 0, DateTimeKind.Utc), 
+                "assets/countdown/wilds-logo.png", 
+                "https://www.reddit.com/r/MonsterHunter/comments/18dxl9s/monster_hunter_wilds_logo_has_two_monster_heads/",
+                "assets/countdown/8bit.mp3",
+                "https://www.youtube.com/watch?v=NBg1SDWDnLI",
+                "assets/countdown/wildsbackground.webp",
+                "https://www.reddit.com/r/MonsterHunter/comments/18dfb1u/wilds_wallpaper/",
                 nowTimeProvider
             );
-            CurrentModel = _finalFantasyCountdown;
+            CurrentModel = _nextGameCountdown;
         }
 
         public void StartTimer()
@@ -81,7 +81,7 @@ namespace hub.Client.ViewModels.Countdown
         private void ChangeDisplay(int diff)
         {
             _christmasCountdown.CycleDisplayType(diff);
-            _finalFantasyCountdown.CycleDisplayType(diff);
+            _nextGameCountdown.CycleDisplayType(diff);
             _timer.Stop();
             _timer.Interval = TimerDelay;
             _timer.Start();
@@ -127,7 +127,7 @@ namespace hub.Client.ViewModels.Countdown
 
         public void SelectFinalFantasy()
         {
-            SelectCountdown(_finalFantasyCountdown).ConfigureAwait(false);
+            SelectCountdown(_nextGameCountdown).ConfigureAwait(false);
         }
 
         public CountdownModel CurrentModel { get; private set; }
