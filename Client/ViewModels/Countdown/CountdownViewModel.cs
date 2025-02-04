@@ -58,7 +58,7 @@ namespace hub.Client.ViewModels.Countdown
             
             _nextGameCountdown = new CountdownModel(
                 "Monster Hunter Wilds",
-                new DateTime(2025, 2, 28, 5, 0, 0, 0, DateTimeKind.Utc), 
+                new DateTime(2025, 2, 28, 0, 0, 0, 0, DateTimeKind.Utc), 
                 "assets/countdown/wilds-logo.png", 
                 "https://www.reddit.com/r/MonsterHunter/comments/18dxl9s/monster_hunter_wilds_logo_has_two_monster_heads/",
                 "assets/countdown/8bit.mp3",
